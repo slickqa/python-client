@@ -15,5 +15,16 @@ Copyright 2013 AccessData Group, LLC.
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-from .data import *
-from .connection import SlickConnection, SlickCommunicationError
+
+from . import micromodels
+
+class Configuration(micromodels.Model):
+    id = micromodels.StringField()
+    name = micromodels.StringField()
+    configurationType = micromodels.StringField()
+    filename = micromodels.StringField()
+
+    # Using BaseField for now as a way of holding a dictionary field
+    configurationData = micromodels.BaseField()
+
+

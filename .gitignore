@@ -15,3 +15,5 @@ TEST-*.xml
 nb-configuration.xml
 /target/
 */__pycache__/*
+/dist/*
+/slick.egg-info/*
