@@ -1,5 +1,5 @@
-from slick import SlickConnection, Configuration
-from slick.queries import ConfigurationQuery
+from slickqa import SlickConnection, Configuration
+from slickqa.queries import ConfigurationQuery
 
 slick = SlickConnection('http://localhost:8080')
 allconfigs = slick.configurations.find()

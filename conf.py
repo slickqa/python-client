@@ -41,7 +41,7 @@ source_suffix = '.rst'
 master_doc = 'documentation'
 
 # General information about the project.
-project = 'slick'
+project = 'slickqa'
 copyright = '2013, Jason Corbett'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -92,7 +92,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'agogo'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -184,7 +184,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('documentation', 'slick.tex', 'slick Documentation',
+  ('documentation', 'slickqa.tex', 'slick Documentation',
    'Jason Corbett', 'manual'),
 ]
 
@@ -214,7 +214,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('documentation', 'slick', 'slick Documentation',
+    ('documentation', 'slickqa', 'slickqa Documentation',
      ['Jason Corbett'], 1)
 ]
 
@@ -228,8 +228,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('documentation', 'slick', 'slick Documentation',
-   'Jason Corbett', 'slick', 'One line description of project.',
+  ('documentation', 'slickqa', 'slickqa Documentation',
+   'Jason Corbett', 'slickqa', 'One line description of project.',
    'Miscellaneous'),
 ]
 

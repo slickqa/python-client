@@ -8,7 +8,7 @@ distribute_setup.use_setuptools()
 from setuptools import setup, find_packages
 
 setup(
-    name="slick",
+    name="slickqa",
     description="A client library for the Slick QA result database",
     version="2.0" + open("build.txt").read(),
     license="License :: OSI Approved :: Apache Software License",

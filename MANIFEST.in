@@ -1,2 +1,5 @@
 include *.txt
 include distribute_setup.py
+include Makefile
+include *.rst
+include conf.py
