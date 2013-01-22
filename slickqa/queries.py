@@ -24,6 +24,9 @@ class SlickQuery(micromodels.Model):
     """Base class for all query classes.  Query classes aren't used by slick, but are a way of documenting which
     query options are available for various endpoints."""
 
+    def __init__(self):
+        super(SlickQuery, self).__init__()
+
 
 class ConfigurationQuery(SlickQuery):
     """Configuration Query options.  There are 3:
@@ -40,6 +43,8 @@ class ConfigurationQuery(SlickQuery):
 
     def __init__(self, name=None, configurationType=None, filename=None):
         """Create a new configuration query, optionally specifying the parameters"""
+        super(ConfigurationQuery, self).__init__()
+
         if name is not None:
             self.name = name
         if configurationType is not None:

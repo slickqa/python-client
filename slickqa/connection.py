@@ -19,9 +19,10 @@ __author__ = 'Jason Corbett'
 
 
 import requests
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote
 import logging
 import types
+import traceback
 
 from .micromodels import Model
 from .data import *
@@ -67,8 +68,8 @@ class SlickApiPart(object):
         else:
             self.name = model.__name__.lower() + "s"
 
-        self.logger = logging.getLogger(name=self.get_name())
         self.parent = parentPart
+        self.logger = logging.getLogger(name=self.get_name())
         self.data = None
 
     def get_name(self):
@@ -135,6 +136,23 @@ class SlickApiPart(object):
         the parent object.  Example:
         slick.projects("4fd8cd95e4b0ee7ba54b9885").get()
         """
+        url = self.getUrl()
+
+        # hopefully when we discover what problems exist in slick to require this, we can take the loop out
+        r = None
+        for retry in range(3):
+            try:
+                self.logger.debug("Making request to slick at url %s", url)
+                r = requests.get(url)
+                self.logger.debug("Request returned status code %d", r.status_code)
+                if r.status_code is 200:
+                    return self.model.from_dict(r.json())
+                else:
+                    self.logger.debug("Body of what slick returned: %s", r.raw.read())
+            except BaseException as error:
+                self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
+                traceback.print_exc()
+        raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     def update(self):
         """Update the specified object from slick.  You specify the object as a parameter, using the parent object as
@@ -143,16 +161,50 @@ class SlickApiPart(object):
         ... update proj here
         slick.projects(proj).update()
         """
+        url = self.getUrl()
+
+        # hopefully when we discover what problems exist in slick to require this, we can take the loop out
+        r = None
+        for retry in range(3):
+            try:
+                json_data = self.data.to_json()
+                self.logger.debug("Making request to slick at url %s, with data: %s", url, json_data)
+                r = requests.put(url, data=json_data)
+                self.logger.debug("Request returned status code %d", r.status_code)
+                if r.status_code is 200:
+                    return self.model.from_dict(r.json())
+                else:
+                    self.logger.debug("Body of what slick returned: %s", r.raw)
+            except BaseException as error:
+                self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
+        raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     put = update
 
     def create(self):
         """Create the specified object (perform a POST to the api).  You specify the object as a parameter, using
         the parent object as a function.  Example:
-        proj = slick.projects.findByName("foo")
-        ... update proj here
-        slick.projects(proj).update()
+        proj = Project()
+        ... add project data here
+        proj = slick.projects(proj).create()
         """
+        url = self.getUrl()
+
+        # hopefully when we discover what problems exist in slick to require this, we can take the loop out
+        r = None
+        for retry in range(3):
+            try:
+                json_data = self.data.to_json()
+                self.logger.debug("Making request to slick at url %s, with data: %s", url, json_data)
+                r = requests.post(url, data=json_data)
+                self.logger.debug("Request returned status code %d", r.status_code)
+                if r.status_code is 200:
+                    return self.model.from_dict(r.json())
+                else:
+                    self.logger.debug("Body of what slick returned: %s", r.raw)
+            except BaseException as error:
+                self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
+        raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     post = create
 
@@ -161,6 +213,23 @@ class SlickApiPart(object):
         a parameter to the parent object, using it as a function.  Example:
         slick.projects("4fd8cd95e4b0ee7ba54b9885").remove()
         """
+        url = self.getUrl()
+
+        # hopefully when we discover what problems exist in slick to require this, we can take the loop out
+        r = None
+        for retry in range(3):
+            try:
+                json_data = self.data.to_json()
+                self.logger.debug("Making request to slick at url %s, with data: %s", url, json_data)
+                r = requests.delete(url)
+                self.logger.debug("Request returned status code %d", r.status_code)
+                if r.status_code is 200:
+                    return None
+                else:
+                    self.logger.debug("Body of what slick returned: %s", r.raw)
+            except BaseException as error:
+                self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
+        raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     delete = remove
 
@@ -182,6 +251,17 @@ class SlickApiPart(object):
             self.data = args[0]
         return self
 
+class SlickProjectApiPart(SlickApiPart):
+
+    def __init__(self, parentPart):
+        super(SlickProjectApiPart, self).__init__(Project, parentPart)
+
+    def findByName(self, name):
+        """Find a project by it's name"""
+        self.data = "byname/" + quote(name)
+        return self.get()
+
+
 class SlickCommunicationError(Exception):
     pass
 
@@ -200,6 +280,7 @@ class SlickConnection(object):
         else:
             self.baseUrl = baseUrl + "/api"
         self.configurations = SlickApiPart(Configuration, self)
+        self.projects = SlickProjectApiPart(self)
 
     def getUrl(self):
         """This method is used by the slick api parts to get the base url."""

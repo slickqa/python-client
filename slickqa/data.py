@@ -27,4 +27,46 @@ class Configuration(micromodels.Model):
     # Using BaseField for now as a way of holding a dictionary field
     configurationData = micromodels.BaseField()
 
+class Build(micromodels.Model):
+    id = micromodels.StringField()
+    name = micromodels.StringField()
+    built = micromodels.DateTimeField(use_int=True)
+
+class Release(micromodels.Model):
+    id = micromodels.StringField()
+    name = micromodels.StringField()
+    target = micromodels.DateTimeField(use_int=True)
+    defaultBuild = micromodels.StringField()
+    builds = micromodels.ModelCollectionField(Build)
+
+class Component(micromodels.Model):
+    id = micromodels.StringField()
+    name = micromodels.StringField()
+    description = micromodels.StringField()
+    code = micromodels.StringField()
+
+class DataDrivenPropertyType(micromodels.Model):
+    name = micromodels.StringField()
+    requirement = micromodels.BooleanField()
+    standardValues = micromodels.FieldCollectionField(micromodels.StringField)
+
+class Project(micromodels.Model):
+    id = micromodels.StringField()
+    name = micromodels.StringField()
+    description = micromodels.StringField()
+    configuration = micromodels.ModelField(Configuration)
+    defaultRelease = micromodels.StringField()
+    releases = micromodels.ModelCollectionField(Release)
+    inactiveReleases = micromodels.ModelCollectionField(Release)
+    lastUpdated = micromodels.DateTimeField(use_int=True)
+    tags = micromodels.FieldCollectionField(micromodels.StringField())
+    attributes = micromodels.BaseField()
+    automationTools = micromodels.FieldCollectionField(micromodels.StringField())
+    components = micromodels.ModelCollectionField(Component)
+    datadrivenProperties = micromodels.ModelCollectionField(DataDrivenPropertyType)
+
+
+
+
+
 

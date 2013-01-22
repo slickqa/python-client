@@ -256,11 +256,12 @@ class ModelCollectionField(WrappedObjectField):
     """
     def to_python(self):
         object_list = []
-        for item in self.data:
-            obj = self._wrapped_class.from_dict(item)
-            if self._related_name is not None:
-                setattr(obj, self._related_name, self._related_obj)
-            object_list.append(obj)
+        if self.data is not None:
+            for item in self.data:
+                obj = self._wrapped_class.from_dict(item)
+                if self._related_name is not None:
+                    setattr(obj, self._related_name, self._related_obj)
+                object_list.append(obj)
 
         return object_list
 
