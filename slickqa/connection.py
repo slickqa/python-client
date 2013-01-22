@@ -151,7 +151,6 @@ class SlickApiPart(object):
                     self.logger.debug("Body of what slick returned: %s", r.raw.read())
             except BaseException as error:
                 self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
-                traceback.print_exc()
         raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     def update(self):
