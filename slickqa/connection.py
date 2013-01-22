@@ -31,10 +31,6 @@ from . import queries
 
 json_content = {'Content-Type': 'application/json'}
 STREAM_CONTENT = {'Content-Type': 'application/octet-stream'}
-GET = 'GET'
-POST = 'POST'
-PUT = 'PUT'
-DELETE = 'DELETE'
 
 class FindOneModeEnum(object):
     """
@@ -168,7 +164,7 @@ class SlickApiPart(object):
             try:
                 json_data = self.data.to_json()
                 self.logger.debug("Making request to slick at url %s, with data: %s", url, json_data)
-                r = requests.put(url, data=json_data)
+                r = requests.put(url, data=json_data, headers=json_content)
                 self.logger.debug("Request returned status code %d", r.status_code)
                 if r.status_code is 200:
                     return self.model.from_dict(r.json())
@@ -195,7 +191,7 @@ class SlickApiPart(object):
             try:
                 json_data = self.data.to_json()
                 self.logger.debug("Making request to slick at url %s, with data: %s", url, json_data)
-                r = requests.post(url, data=json_data)
+                r = requests.post(url, data=json_data, headers=json_content)
                 self.logger.debug("Request returned status code %d", r.status_code)
                 if r.status_code is 200:
                     return self.model.from_dict(r.json())
