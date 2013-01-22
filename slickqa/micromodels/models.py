@@ -11,7 +11,12 @@ class ModelMeta(type):
 
     '''
     def __init__(cls, name, bases, attrs):
+
+
         cls._clsfields = {}
+        for base in bases:
+            if hasattr(base, '_clsfields'):
+                cls._clsfields.update(base._clsfields)
         for key, value in attrs.items():
             if isinstance(value, BaseField):
                 cls._clsfields[key] = value

@@ -51,3 +51,23 @@ class ConfigurationQuery(SlickQuery):
             self.configurationType = configurationType
         if filename is not None:
             self.filename = filename
+
+class SystemConfigurationQuery(SlickQuery):
+    """
+    Query for SystemConfigurations.  SystemConfigurations are different in that they are only an interface on the server
+    and any java class can inherit and become a SystemConfiguration.  Because of this there is no specific model for
+    SystemConfiguration.
+
+    The query options are for a specific config-type or name.
+    """
+    configtype = micromodels.StringField('config-type')
+    name = micromodels.StringField()
+
+    def __init__(self, configtype = None, name = None):
+        """Query for a system configuration.  You should specify a configuration type, otherwise you will get lots of
+        different system configuration types back.
+        """
+        if configtype is not None:
+            self.configtype = configtype
+        if name is not None:
+            self.name = name

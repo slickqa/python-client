@@ -66,6 +66,34 @@ class Project(micromodels.Model):
     datadrivenProperties = micromodels.ModelCollectionField(DataDrivenPropertyType)
 
 
+class SystemConfiguration(micromodels.Model):
+    """
+    This model should be inherited by a sub model as each SystemConfiguration class will have different properties.
+    The properties listed here are ones that are global to all SystemConfiguration instances (they are part of the
+    java interface).
+    """
+    id = micromodels.StringField()
+    configurationType = micromodels.StringField()
+    name = micromodels.StringField()
+    className = micromodels.StringField()
+
+class AMQPSystemConfiguration(SystemConfiguration):
+    """
+    AMQP System Configurations.  The class name and configurationType should be fixed.
+    """
+    exchangeName = micromodels.StringField()
+    hostname = micromodels.StringField()
+    port = micromodels.IntegerField()
+    username = micromodels.StringField()
+    password = micromodels.StringField()
+    virtualHost = micromodels.StringField()
+
+    def __init__(self):
+        super(AMQPSystemConfiguration, self).__init__()
+        self.className = 'org.tcrun.slickij.api.data.AMQPSystemConfiguration'
+        self.configurationType = 'amqp-system-configuration'
+
+
 
 
 

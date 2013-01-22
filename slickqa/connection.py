@@ -57,12 +57,12 @@ def obj_hook_attr_dict(dct):
 class SlickApiPart(object):
     """A class representing part of the slick api"""
 
-    def __init__(self, model, parentPart):
+    def __init__(self, model, parentPart, name=None):
         self.model = model
-        if hasattr(model, 'URLPART'):
-            self.name = model.URLPART
-        else:
+        if name is None:
             self.name = model.__name__.lower() + "s"
+        else:
+            self.name = name
 
         self.parent = parentPart
         self.logger = logging.getLogger(name=self.get_name())
@@ -101,7 +101,7 @@ class SlickApiPart(object):
                         retval.append(self.model.from_dict(dct))
                     return retval
                 else:
-                    self.logger.debug("Body of what slick returned: %s", r.raw)
+                    self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
                 self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
         raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
@@ -144,7 +144,7 @@ class SlickApiPart(object):
                 if r.status_code is 200:
                     return self.model.from_dict(r.json())
                 else:
-                    self.logger.debug("Body of what slick returned: %s", r.raw.read())
+                    self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
                 self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
         raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
@@ -156,22 +156,24 @@ class SlickApiPart(object):
         ... update proj here
         slick.projects(proj).update()
         """
+        obj = self.data
         url = self.getUrl()
 
         # hopefully when we discover what problems exist in slick to require this, we can take the loop out
         r = None
         for retry in range(3):
             try:
-                json_data = self.data.to_json()
+                json_data = obj.to_json()
                 self.logger.debug("Making request to slick at url %s, with data: %s", url, json_data)
                 r = requests.put(url, data=json_data, headers=json_content)
                 self.logger.debug("Request returned status code %d", r.status_code)
                 if r.status_code is 200:
                     return self.model.from_dict(r.json())
                 else:
-                    self.logger.debug("Body of what slick returned: %s", r.raw)
+                    self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
                 self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
+                traceback.print_exc()
         raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     put = update
@@ -183,20 +185,22 @@ class SlickApiPart(object):
         ... add project data here
         proj = slick.projects(proj).create()
         """
+        obj = self.data
+        self.data = None
         url = self.getUrl()
 
         # hopefully when we discover what problems exist in slick to require this, we can take the loop out
         r = None
         for retry in range(3):
             try:
-                json_data = self.data.to_json()
+                json_data = obj.to_json()
                 self.logger.debug("Making request to slick at url %s, with data: %s", url, json_data)
                 r = requests.post(url, data=json_data, headers=json_content)
                 self.logger.debug("Request returned status code %d", r.status_code)
                 if r.status_code is 200:
                     return self.model.from_dict(r.json())
                 else:
-                    self.logger.debug("Body of what slick returned: %s", r.raw)
+                    self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
                 self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
         raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
@@ -214,14 +218,13 @@ class SlickApiPart(object):
         r = None
         for retry in range(3):
             try:
-                json_data = self.data.to_json()
-                self.logger.debug("Making request to slick at url %s, with data: %s", url, json_data)
+                self.logger.debug("Making DELETE request to slick at url %s", url)
                 r = requests.delete(url)
                 self.logger.debug("Request returned status code %d", r.status_code)
                 if r.status_code is 200:
                     return None
                 else:
-                    self.logger.debug("Body of what slick returned: %s", r.raw)
+                    self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
                 self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
         raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
@@ -256,6 +259,31 @@ class SlickProjectApiPart(SlickApiPart):
         self.data = "byname/" + quote(name)
         return self.get()
 
+class SystemConfigurationApiPart(SlickApiPart):
+    """
+    The system-configuration api is different from other apis.  The model for the return type is variable due to it
+    being able to store different instances of system configuration classes.
+    """
+
+    def __init__(self, parentPart):
+        super(SystemConfigurationApiPart, self).__init__(SystemConfiguration, parentPart, 'system-configuration')
+
+    def __call__(self, model, data=None):
+        """Make a request for system-configuration, but you not only need to provide the data, but the model that is
+        needed for return type.
+        """
+        self.model = model
+        if data is not None:
+            return(super(SystemConfigurationApiPart, self).__call__(data))
+        else:
+            return self
+
+    def find(self, query=None, **kwargs):
+        instance = self.model()
+        if hasattr(instance, 'configurationType') and instance.configurationType is not None:
+            kwargs['config-type'] = instance.configurationType
+        return super(SystemConfigurationApiPart, self).find(query, **kwargs)
+
 
 class SlickCommunicationError(Exception):
     pass
@@ -276,6 +304,7 @@ class SlickConnection(object):
             self.baseUrl = baseUrl + "/api"
         self.configurations = SlickApiPart(Configuration, self)
         self.projects = SlickProjectApiPart(self)
+        self.systemconfigurations = SystemConfigurationApiPart(self)
 
     def getUrl(self):
         """This method is used by the slick api parts to get the base url."""
