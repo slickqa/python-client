@@ -93,8 +93,40 @@ class AMQPSystemConfiguration(SystemConfiguration):
         self.className = 'org.tcrun.slickij.api.data.AMQPSystemConfiguration'
         self.configurationType = 'amqp-system-configuration'
 
+class EmailSystemConfiguration(SystemConfiguration):
+    """Global Slick email configuration settings.  Things like smtp configuration and the sender email address are
+    configured here."""
 
+    smtpHostname = micromodels.StringField()
+    smtpPort = micromodels.IntegerField()
+    smtpUsername = micromodels.StringField()
+    smtpPassword = micromodels.StringField()
+    ssl = micromodels.BooleanField()
+    enabled = micromodels.BooleanField()
+    sender = micromodels.StringField()
 
+    def __init__(self):
+        super(EmailSystemConfiguration, self).__init__()
+        self.className = 'org.tcrun.slickij.api.data.EmailSystemConfiguration'
+        self.configurationType = 'email-system-configuration'
+        self.configurationName = 'Global Email System Configuration'
+
+class SubscriptionInfo(micromodels.Model):
+    """Data representing an email subscription to events that happen on slick."""
+
+    subscriptionType = micromodels.StringField()
+    subscriptionValue = micromodels.StringField()
+    onStart = micromodels.BooleanField()
+
+class EmailSubscription(SystemConfiguration):
+    """Email subscriptions have the email address as the name, and embed a list of subscription info models"""
+    enabled = micromodels.BooleanField();
+    subscriptions = micromodels.ModelCollectionField(SubscriptionInfo)
+
+    def __init__(self):
+        super(EmailSubscription, self).__init__()
+        self.className = 'org.tcrun.slickij.api.data.EmailSubscription'
+        self.configurationType = 'email-subscription'
 
 
 

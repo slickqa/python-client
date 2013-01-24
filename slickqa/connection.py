@@ -22,6 +22,7 @@ import requests
 from urllib.parse import urlencode, quote
 import logging
 import types
+import sys
 import traceback
 
 from .micromodels import Model
@@ -103,7 +104,7 @@ class SlickApiPart(object):
                 else:
                     self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
-                self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
+                self.logger.warn("Received exception while connecting to slick at %s", url, exc_info=sys.exc_info())
         raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
 
@@ -146,7 +147,7 @@ class SlickApiPart(object):
                 else:
                     self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
-                self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
+                self.logger.warn("Received exception while connecting to slick at %s", url, exc_info=sys.exc_info())
         raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     def update(self):
@@ -172,7 +173,7 @@ class SlickApiPart(object):
                 else:
                     self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
-                self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
+                self.logger.warn("Received exception while connecting to slick at %s", url, exc_info=sys.exc_info())
                 traceback.print_exc()
         raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
@@ -202,7 +203,7 @@ class SlickApiPart(object):
                 else:
                     self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
-                self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
+                self.logger.warn("Received exception while connecting to slick at %s", url, exc_info=sys.exc_info())
         raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     post = create
@@ -226,7 +227,7 @@ class SlickApiPart(object):
                 else:
                     self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
-                self.logger.warn("Received exception while connecting to slick at %s: %s", url, str(error))
+                self.logger.warn("Received exception while connecting to slick at %s", url, exc_info=sys.exc_info())
         raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     delete = remove
