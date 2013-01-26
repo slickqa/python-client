@@ -306,6 +306,7 @@ class SlickConnection(object):
         self.configurations = SlickApiPart(Configuration, self)
         self.projects = SlickProjectApiPart(self)
         self.systemconfigurations = SystemConfigurationApiPart(self)
+        self.version = SlickApiPart(ProductVersion, self, name='version')
 
     def getUrl(self):
         """This method is used by the slick api parts to get the base url."""

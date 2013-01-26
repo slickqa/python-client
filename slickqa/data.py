@@ -66,6 +66,11 @@ class Project(micromodels.Model):
     datadrivenProperties = micromodels.ModelCollectionField(DataDrivenPropertyType)
 
 
+class ProductVersion(micromodels.Model):
+    """This class represents a version of a product.  The only product included with slick for now is 'slick'"""
+    productName = micromodels.StringField()
+    versionString = micromodels.StringField()
+
 class SystemConfiguration(micromodels.Model):
     """
     This model should be inherited by a sub model as each SystemConfiguration class will have different properties.
