@@ -148,6 +148,7 @@ class TestrunSummary(micromodels.Model):
 
 class Testrun(micromodels.Model):
     id = micromodels.StringField()
+    name = micromodels.StringField()
     testplanid = micromodels.StringField()
     testplan = micromodels.ModelField(Testplan)
     config = micromodels.ModelField(ConfigurationReference)
