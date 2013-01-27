@@ -27,10 +27,33 @@ class Configuration(micromodels.Model):
     # Using BaseField for now as a way of holding a dictionary field
     configurationData = micromodels.BaseField()
 
+    def create_reference(self):
+        reference = ConfigurationReference()
+        reference.configId = self.id
+        reference.name = self.name
+        reference.filename = self.filename
+        return reference
+
+class ConfigurationReference(micromodels.Model):
+    configId = micromodels.StringField()
+    name = micromodels.StringField()
+    filename = micromodels.StringField()
+
 class Build(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
     built = micromodels.DateTimeField(use_int=True)
+
+    def create_reference(self):
+        ref = BuildReference()
+        ref.buildId = self.id
+        ref.name = self.name
+        return ref
+
+
+class BuildReference(micromodels.Model):
+    buildId = micromodels.StringField()
+    name = micromodels.StringField()
 
 class Release(micromodels.Model):
     id = micromodels.StringField()
@@ -38,6 +61,16 @@ class Release(micromodels.Model):
     target = micromodels.DateTimeField(use_int=True)
     defaultBuild = micromodels.StringField()
     builds = micromodels.ModelCollectionField(Build)
+
+    def create_reference(self):
+        ref = ReleaseReference()
+        ref.releaseId = self.id
+        ref.name = self.name
+        return ref
+
+class ReleaseReference(micromodels.Model):
+    releaseId = micromodels.StringField()
+    name = micromodels.StringField()
 
 class Component(micromodels.Model):
     id = micromodels.StringField()
@@ -65,11 +98,67 @@ class Project(micromodels.Model):
     components = micromodels.ModelCollectionField(Component)
     datadrivenProperties = micromodels.ModelCollectionField(DataDrivenPropertyType)
 
+    def create_reference(self):
+        reference = ProjectReference()
+        reference.id = self.id
+        reference.name = self.name
+        return reference
+
+class ProjectReference(micromodels.Model):
+    id = micromodels.StringField()
+    name = micromodels.StringField()
 
 class ProductVersion(micromodels.Model):
     """This class represents a version of a product.  The only product included with slick for now is 'slick'"""
     productName = micromodels.StringField()
     versionString = micromodels.StringField()
+
+class TestcaseQuery(micromodels.Model):
+    queryDescription = micromodels.StringField()
+    className = micromodels.StringField()
+
+# TODO: define all the types of test case queries
+
+class NamedTestCaseQuery(micromodels.Model):
+    name = micromodels.StringField()
+    query = micromodels.ModelField(TestcaseQuery)
+
+class Testplan(micromodels.Model):
+    id = micromodels.StringField()
+    name = micromodels.StringField()
+    createdBy = micromodels.StringField()
+    project = micromodels.ModelField(ProjectReference)
+    sharedWith = micromodels.FieldCollectionField(micromodels.StringField())
+    isprivate = micromodels.BooleanField()
+    queries = micromodels.ModelCollectionField(NamedTestCaseQuery)
+
+class ResultsByStatus(micromodels.Model):
+    PASS = micromodels.IntegerField()
+    FAIL = micromodels.IntegerField()
+    BROKEN_TEST = micromodels.IntegerField()
+    NOT_TESTED = micromodels.IntegerField()
+    SKIPPED = micromodels.IntegerField()
+    NO_RESULT = micromodels.IntegerField()
+
+class TestrunSummary(micromodels.Model):
+    totalTime = micromodels.IntegerField()
+    resultsByStatus = micromodels.ModelField(ResultsByStatus)
+    statusListOrdered = micromodels.FieldCollectionField(micromodels.StringField())
+    total = micromodels.IntegerField()
+
+class Testrun(micromodels.Model):
+    id = micromodels.StringField()
+    testplanid = micromodels.StringField()
+    testplan = micromodels.ModelField(Testplan)
+    config = micromodels.ModelField(ConfigurationReference)
+    runtimeOptions = micromodels.ModelField(ConfigurationReference)
+    project = micromodels.ModelField(ProjectReference)
+    dateCreated = micromodels.DateTimeField(use_int=True)
+    release = micromodels.ModelField(ReleaseReference)
+    build = micromodels.ModelField(BuildReference)
+    finished = micromodels.BooleanField()
+    summary = micromodels.ModelField(TestrunSummary)
+
 
 class SystemConfiguration(micromodels.Model):
     """

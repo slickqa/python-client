@@ -306,6 +306,8 @@ class SlickConnection(object):
         self.configurations = SlickApiPart(Configuration, self)
         self.projects = SlickProjectApiPart(self)
         self.systemconfigurations = SystemConfigurationApiPart(self)
+        self.testplans = SlickApiPart(Testplan, self)
+        self.testruns = SlickApiPart(Testrun, self)
         self.version = SlickApiPart(ProductVersion, self, name='version')
 
     def getUrl(self):
