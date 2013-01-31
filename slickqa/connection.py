@@ -309,6 +309,8 @@ class SlickConnection(object):
         self.testplans = SlickApiPart(Testplan, self)
         self.testruns = SlickApiPart(Testrun, self)
         self.version = SlickApiPart(ProductVersion, self, name='version')
+        self.testcases = SlickApiPart(Testcase, self)
+        self.results = SlickApiPart(Result, self)
 
     def getUrl(self):
         """This method is used by the slick api parts to get the base url."""

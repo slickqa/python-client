@@ -72,11 +72,23 @@ class ReleaseReference(micromodels.Model):
     releaseId = micromodels.StringField()
     name = micromodels.StringField()
 
+class ComponentReference(micromodels.Model):
+    id = micromodels.StringField()
+    name = micromodels.StringField()
+    code = micromodels.StringField()
+
 class Component(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
     description = micromodels.StringField()
     code = micromodels.StringField()
+
+    def create_reference(self):
+        ref = ComponentReference()
+        ref.id = self.id
+        ref.name = self.name
+        ref.code = self.code
+        return ref
 
 class DataDrivenPropertyType(micromodels.Model):
     name = micromodels.StringField()
@@ -123,6 +135,47 @@ class NamedTestCaseQuery(micromodels.Model):
     name = micromodels.StringField()
     query = micromodels.ModelField(TestcaseQuery)
 
+class Step(micromodels.Model):
+    name = micromodels.StringField()
+    expectedResult = micromodels.StringField()
+
+class TestcaseReference(micromodels.Model):
+    testcaseId = micromodels.StringField()
+    name = micromodels.StringField()
+    automationId = micromodels.StringField()
+    automationKey = micromodels.StringField()
+    automationTool = micromodels.StringField()
+
+class Testcase(micromodels.Model):
+    id = micromodels.StringField()
+    name = micromodels.StringField()
+    purpose = micromodels.StringField()
+    requirements = micromodels.StringField()
+    steps = micromodels.ModelCollectionField(Step)
+    author = micromodels.StringField()
+    attributes = micromodels.BaseField()
+    automated = micromodels.BooleanField()
+    automationPriority = micromodels.IntegerField()
+    automationTool = micromodels.StringField()
+    automationConfiguration = micromodels.StringField()
+    automationId = micromodels.StringField()
+    automationKey = micromodels.StringField()
+    stabilityRating = micromodels.IntegerField()
+    tags = micromodels.FieldCollectionField(micromodels.StringField())
+    project = micromodels.ModelField(ProjectReference)
+    component = micromodels.ModelField(ComponentReference)
+    dataDriven = micromodels.ModelCollectionField(DataDrivenPropertyType)
+    deleted = micromodels.BooleanField()
+
+    def create_reference(self):
+        reference = TestcaseReference()
+        reference.testcaseId = self.id
+        reference.name = self.name
+        reference.automationId = self.automationId
+        reference.automationKey = self.automationKey
+        reference.automationTool = self.automationTool
+        return reference
+
 class Testplan(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
@@ -146,6 +199,10 @@ class TestrunSummary(micromodels.Model):
     statusListOrdered = micromodels.FieldCollectionField(micromodels.StringField())
     total = micromodels.IntegerField()
 
+class TestrunReference(micromodels.Model):
+    testrunId = micromodels.StringField()
+    name = micromodels.StringField()
+
 class Testrun(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
@@ -160,6 +217,75 @@ class Testrun(micromodels.Model):
     finished = micromodels.BooleanField()
     summary = micromodels.ModelField(TestrunSummary)
 
+    def create_reference(self):
+        ref = TestrunReference()
+        ref.testrunId = self.id
+        ref.name = self.name
+        return ref
+
+class ResultStatus:
+    PASS = "PASS"
+    FAIL = "FAIL"
+    NOT_TESTED = "NOT_TESTED"
+    NO_RESULT = "NO_RESULT"
+    BROKEN_TEST = "BROKEN_TEST"
+    SKIPPED = "SKIPPED"
+    CANCELLED = "CANCELLED"
+
+class RunStatus:
+    TO_BE_RUN = "TO_BE_RUN"
+    RUNNING = "RUNNING"
+    FINISHED = "FINISHED"
+
+class StoredFile(micromodels.Model):
+    id = micromodels.StringField()
+    filename = micromodels.StringField()
+    chunkSize = micromodels.IntegerField()
+    uploadDate = micromodels.DateTimeField(use_int=True)
+    mimetype = micromodels.StringField()
+    md5 = micromodels.StringField()
+    length = micromodels.IntegerField()
+
+class LogEntry(micromodels.Model):
+    entryTime = micromodels.DateTimeField(use_int=True)
+    level = micromodels.StringField()
+    loggerName = micromodels.StringField()
+    message = micromodels.StringField()
+    exceptionClassName = micromodels.StringField()
+    exceptionMessage = micromodels.StringField()
+    exceptionStackTrace = micromodels.FieldCollectionField(micromodels.StringField())
+
+class ConfigurationOverride(micromodels.Model):
+    key = micromodels.StringField()
+    value = micromodels.StringField()
+    isRequirement = micromodels.BooleanField()
+
+class ResultReference(micromodels.Model):
+    resultId = micromodels.StringField()
+    status = micromodels.StringField()
+    recorded = micromodels.DateTimeField(use_int=True)
+    build = micromodels.ModelField(BuildReference)
+
+class Result(micromodels.Model):
+    id = micromodels.StringField()
+    testrun = micromodels.ModelField(TestrunReference)
+    config = micromodels.ModelField(ConfigurationReference)
+    configurationOverride = micromodels.ModelCollectionField(ConfigurationOverride)
+    testcase = micromodels.ModelField(TestcaseReference)
+    recorded = micromodels.DateTimeField(use_int=True)
+    status = micromodels.StringField()
+    runstatus = micromodels.StringField()
+    reason = micromodels.StringField()
+    attributes = micromodels.BaseField()
+    files = micromodels.ModelCollectionField(StoredFile)
+    log = micromodels.ModelCollectionField(LogEntry)
+    project = micromodels.ModelField(ProjectReference)
+    component = micromodels.ModelField(ComponentReference)
+    release = micromodels.ModelField(ReleaseReference)
+    build = micromodels.ModelField(BuildReference)
+    runlength = micromodels.IntegerField()
+    history = micromodels.ModelCollectionField(ResultReference)
+    hostname =micromodels.StringField()
 
 class SystemConfiguration(micromodels.Model):
     """
