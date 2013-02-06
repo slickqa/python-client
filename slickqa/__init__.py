@@ -17,3 +17,4 @@ Copyright 2013 AccessData Group, LLC.
 """
 from .data import *
 from .connection import SlickConnection, SlickCommunicationError
+from .queries import *

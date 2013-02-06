@@ -21,7 +21,6 @@ __author__ = 'Jason Corbett'
 import requests
 from urllib.parse import urlencode, quote
 import logging
-import types
 import sys
 import traceback
 
@@ -305,12 +304,18 @@ class SlickConnection(object):
             self.baseUrl = baseUrl + "/api"
         self.configurations = SlickApiPart(Configuration, self)
         self.projects = SlickProjectApiPart(self)
+        self.projects.releases = SlickApiPart(Release, self.projects)
+        self.projects.releases.builds = SlickApiPart(Build, self.projects.releases)
         self.systemconfigurations = SystemConfigurationApiPart(self)
         self.testplans = SlickApiPart(Testplan, self)
         self.testruns = SlickApiPart(Testrun, self)
         self.version = SlickApiPart(ProductVersion, self, name='version')
         self.testcases = SlickApiPart(Testcase, self)
         self.results = SlickApiPart(Result, self)
+        self.testrungroups = SlickApiPart(TestrunGroup, self)
+        self.hoststatus = SlickApiPart(HostStatus, self, name='hoststatus')
+        self.updates = SlickApiPart(SlickUpdate, self, name='updates')
+        self.updates.records = SlickApiPart(UpdateRecord, self.updates, name='records')
 
     def getUrl(self):
         """This method is used by the slick api parts to get the base url."""

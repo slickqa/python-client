@@ -16,7 +16,6 @@ Copyright 2013 AccessData Group, LLC.
    limitations under the License.
 """
 __author__ = 'Jason Corbett'
-__author__ = 'jcorbett'
 
 from . import micromodels
 
@@ -71,3 +70,126 @@ class SystemConfigurationQuery(SlickQuery):
             self.configtype = configtype
         if name is not None:
             self.name = name
+
+class ResultQuery(SlickQuery):
+    testrunid = micromodels.StringField()
+    status = micromodels.StringField()
+    excludestatus = micromodels.StringField()
+    runstatus = micromodels.StringField()
+    allfields = micromodels.BooleanField()
+
+    def __init__(self, testrunid=None, status=None, excludestatus=None, runstatus=None, allfields=None):
+        if testrunid is not None:
+            self.testrunid = testrunid
+        if status is not None:
+            self.status = status
+        if excludestatus is not None:
+            self.excludestatus = excludestatus
+        if runstatus is not None:
+            self.runstatus = runstatus
+        if allfields is not None:
+            self.allfields = allfields
+
+class TestcaseQuery(SlickQuery):
+    projectid = micromodels.StringField()
+    componentid = micromodels.StringField()
+    automationKey = micromodels.StringField()
+    automationId = micromodels.StringField()
+    automationTool = micromodels.StringField()
+    tag = micromodels.StringField()
+    automated = micromodels.BooleanField()
+    author = micromodels.StringField()
+    namecontains = micromodels.StringField()
+    name = micromodels.StringField()
+
+    def __init__(self, projectid=None, componentid=None, automationKey=None, automationId=None, automationTool=None, tag=None, automated=None, author=None, namecontains=None, name=None):
+        if projectid is not None:
+            self.projectid = projectid
+        if componentid is not None:
+            self.componentid = componentid
+        if automationKey is not None:
+            self.automationKey = automationKey
+        if automationId is not None:
+            self.automationId = automationId
+        if automationTool is not None:
+            self.automationTool = automationTool
+        if tag is not None:
+            self.tag = tag
+        if automated is not None:
+            self.automated = automated
+        if author is not None:
+            self.author = author
+        if namecontains is not None:
+            self.namecontains = namecontains
+        if name is not None:
+            self.name = name
+
+class TestrunGroupQuery(SlickQuery):
+    createdafter = micromodels.DateTimeField(use_int=True)
+    name = micromodels.StringField()
+
+    def __init__(self, createdafter=None, name=None):
+        if createdafter is not None:
+            self.createdafter = createdafter
+        if name is not None:
+            self.name = name
+
+class TestplanQuery(SlickQuery):
+    projectid = micromodels.StringField()
+    createdby = micromodels.StringField()
+
+    def __init__(self, projectid, createdby=None):
+        self.projectid = projectid
+        if createdby is not None:
+            self.createdby = createdby
+
+class TestrunQuery(SlickQuery):
+    projectid = micromodels.StringField()
+    releaseid = micromodels.StringField()
+    buildid = micromodels.StringField()
+    createdafter = micromodels.DateTimeField(use_int=True)
+    configid = micromodels.StringField()
+    testplanid = micromodels.StringField()
+    configName = micromodels.StringField()
+    projectName = micromodels.StringField()
+    releaseName = micromodels.StringField()
+    buildName = micromodels.StringField()
+    name = micromodels.StringField()
+    limit = micromodels.IntegerField()
+
+    def __init__(self, projectid=None, releaseid=None, buildid=None, createdafter=None, configid=None, testplanid=None,
+                 configName=None, projectName=None, releaseName=None, buildName=None, name=None, limit=None):
+        if projectid is not None:
+            self.projectid = projectid
+        if releaseid is not None:
+            self.releaseid = releaseid
+        if buildid is not None:
+            self.buildid = buildid
+        if createdafter is not None:
+            self.createdafter = createdafter
+        if configid is not None:
+            self.configid = configid
+        if testplanid is not None:
+            self.testplanid = testplanid
+        if configName is not None:
+            self.configName = configName
+        if projectName is not None:
+            self.projectName = projectName
+        if releaseName is not None:
+            self.releaseName = releaseName
+        if buildName is not None:
+            self.buildName = buildName
+        if name is not None:
+            self.name = name
+        if limit is not None:
+            self.limit = limit
+
+class HostStatusQuery(SlickQuery):
+    """Query for a hosts status"""
+    checkincutoff = micromodels.IntegerField()
+
+    def __init__(self, checkincutoff=None):
+        """You can query for all the host status within a time window between "now" and a number of minutes ago.  The
+        default cut off is 5 minutes."""
+        if checkincutoff is not None:
+            self.checkincutoff = checkincutoff
