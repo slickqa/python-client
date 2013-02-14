@@ -53,6 +53,7 @@ class Build(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
     built = micromodels.DateTimeField(use_int=True)
+    description = micromodels.StringField()
 
     def create_reference(self):
         ref = BuildReference()
@@ -390,6 +391,16 @@ class EmailSystemConfiguration(SystemConfiguration):
         self.className = 'org.tcrun.slickij.api.data.EmailSystemConfiguration'
         self.configurationType = 'email-system-configuration'
         self.configurationName = 'Global Email System Configuration'
+
+class EmailOffSwitch(SystemConfiguration):
+    """A way to turn off emails for particular parts of the product"""
+    turnOffEmailsForType = micromodels.StringField()
+    turnOffEmailsForId = micromodels.StringField()
+
+    def __init__(self):
+        super(EmailOffSwitch, self).__init__()
+        self.className = 'org.tcrun.slickij.api.data.EmailOffSwitch'
+        self.configurationType = 'email-off-switch'
 
 class SubscriptionInfo(micromodels.Model):
     """Data representing an email subscription to events that happen on slick."""
