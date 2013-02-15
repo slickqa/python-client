@@ -210,6 +210,7 @@ class ResultsByStatus(micromodels.Model):
     NOT_TESTED = micromodels.IntegerField()
     SKIPPED = micromodels.IntegerField()
     NO_RESULT = micromodels.IntegerField()
+    CANCELLED = micromodels.IntegerField()
 
 class TestrunSummary(micromodels.Model):
     totalTime = micromodels.IntegerField()
