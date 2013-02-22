@@ -49,6 +49,12 @@ class ReloadStatus(micromodels.Model):
     reloadTime = micromodels.DateTimeField(use_int=True)
     systemStatus = micromodels.StringField()
 
+class Quote(micromodels.Model):
+    id = micromodels.StringField()
+    quote = micromodels.StringField()
+    imageUrl = micromodels.StringField()
+    attributed = micromodels.StringField()
+
 class Build(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()

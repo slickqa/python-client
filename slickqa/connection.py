@@ -316,6 +316,7 @@ class SlickConnection(object):
         self.hoststatus = SlickApiPart(HostStatus, self, name='hoststatus')
         self.updates = SlickApiPart(SlickUpdate, self, name='updates')
         self.updates.records = SlickApiPart(UpdateRecord, self.updates, name='records')
+        self.quotes = SlickApiPart(Quote, self)
 
     def getUrl(self):
         """This method is used by the slick api parts to get the base url."""
