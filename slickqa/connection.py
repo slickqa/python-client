@@ -306,6 +306,7 @@ class SlickConnection(object):
         self.projects = SlickProjectApiPart(self)
         self.projects.releases = SlickApiPart(Release, self.projects)
         self.projects.releases.builds = SlickApiPart(Build, self.projects.releases)
+        self.projects.components = SlickApiPart(Component, self.projects)
         self.systemconfigurations = SystemConfigurationApiPart(self)
         self.testplans = SlickApiPart(Testplan, self)
         self.testruns = SlickApiPart(Testrun, self)
