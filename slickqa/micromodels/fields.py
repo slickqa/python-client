@@ -1,5 +1,5 @@
 import datetime
-from . import PySO8601
+from .packages import PySO8601
 
 
 class BaseField(object):
@@ -36,6 +36,19 @@ class BaseField(object):
 
         '''
         return data
+
+
+class CharField(BaseField):
+    """Field to represent a simple Unicode string value."""
+
+    def to_python(self):
+        """Convert the data supplied using the :meth:`populate` method to a
+        Unicode string.
+
+        """
+        if self.data is None:
+            return ''
+        return str(self.data)
 
 
 class StringField(BaseField):
@@ -128,7 +141,9 @@ class DateTimeField(BaseField):
 
     def to_serial(self, time_obj):
         if self.use_int:
-            return round((time_obj - datetime.datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+            s = time_obj - datetime.datetime.utcfromtimestamp(0)
+            t = s.total_seconds() * 1000
+            return int(round(t))
         if not self.serial_format:
             return time_obj.isoformat()
         return time_obj.strftime(self.serial_format)

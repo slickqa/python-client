@@ -1,7 +1,22 @@
-from slickqa import SlickConnection, Configuration, Project
+import os
+from slickqa import SlickQA
+from slickqa import SlickConnection, ResultStatus, Configuration, Project
 from slickqa.queries import ConfigurationQuery
 
-slick = SlickConnection('http://localhost:8080')
+#if "socks_proxy" in os.environ:
+    #os.environ.pop("socks_proxy")
+url = 'http://localhost:8080'
+
+slick = SlickConnection(url)
+all_projects = slick.projects.find()
+print(("Here are all the projects: {}".format(all_projects)))
+high = SlickQA(url, "test1", "1.0", "311", "Smoke")
+if high.is_connected:
+    high.file_result("tc1", ResultStatus.PASS, "I wanted it to pass", 2)
+    high.file_result("tc2", ResultStatus.FAIL, "I said FAIL!", 5)
+    high.file_result("tc3", ResultStatus.SKIPPED, "darn straight Skippy!", 11)
+    high.file_result("tc4", ResultStatus.BROKEN_TEST, "THERE ARE FOUR LIGHTS!!!", 4)
+
 allconfigs = slick.configurations.find()
 print("All Configurations (there are " + str(len(allconfigs)) + " of them):")
 for config in allconfigs:

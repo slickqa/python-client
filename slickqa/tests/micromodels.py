@@ -1,8 +1,9 @@
 from datetime import date
 import unittest
 
-from .. import micromodels
-from ..micromodels.models import json
+from slickqa import micromodels
+from slickqa.micromodels.models import json
+
 
 class ClassCreationTestCase(unittest.TestCase):
 
@@ -154,7 +155,7 @@ class DateTimeFieldTestCase(unittest.TestCase):
         import datetime
         field = micromodels.DateTimeField(use_int=True)
         expected = datetime.datetime(2013, 1, 16, 11, 36, 27, 185719)
-        intversion = 1358336187186
+        intversion = 1358336187000
         field.populate(intversion)
         converted = field.to_python()
         self.assertTrue(isinstance(converted, datetime.datetime))
@@ -171,7 +172,7 @@ class DateTimeFieldTestCase(unittest.TestCase):
 
     def test_iso8601_conversion(self):
         import datetime
-        from ..micromodels.PySO8601 import Timezone
+        from slickqa.micromodels.packages.PySO8601 import Timezone
         
         field = micromodels.DateTimeField()
         field.populate("2010-07-13T14:01:00Z")
@@ -198,10 +199,7 @@ class DateTimeFieldTestCase(unittest.TestCase):
 
         self.assertEqual(expected, result)
 
-
     def test_iso8601_to_serial(self):
-        import datetime
-        
         field = micromodels.DateTimeField()
         field.populate("2010-07-13T14:01:00Z")
         native = field.to_python()

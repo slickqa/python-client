@@ -18,6 +18,7 @@ Copyright 2013 AccessData Group, LLC.
 
 from . import micromodels
 
+
 class Configuration(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
@@ -34,26 +35,31 @@ class Configuration(micromodels.Model):
         reference.filename = self.filename
         return reference
 
+
 class ConfigurationReference(micromodels.Model):
     configId = micromodels.StringField()
     name = micromodels.StringField()
     filename = micromodels.StringField()
+
 
 class ConfigurationOverride(micromodels.Model):
     key = micromodels.StringField()
     value = micromodels.StringField()
     isRequirement = micromodels.BooleanField()
 
+
 class ReloadStatus(micromodels.Model):
     systemName = micromodels.StringField()
     reloadTime = micromodels.DateTimeField(use_int=True)
     systemStatus = micromodels.StringField()
+
 
 class Quote(micromodels.Model):
     id = micromodels.StringField()
     quote = micromodels.StringField()
     imageUrl = micromodels.StringField()
     attributed = micromodels.StringField()
+
 
 class Build(micromodels.Model):
     id = micromodels.StringField()
@@ -72,6 +78,7 @@ class BuildReference(micromodels.Model):
     buildId = micromodels.StringField()
     name = micromodels.StringField()
 
+
 class Release(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
@@ -85,14 +92,17 @@ class Release(micromodels.Model):
         ref.name = self.name
         return ref
 
+
 class ReleaseReference(micromodels.Model):
     releaseId = micromodels.StringField()
     name = micromodels.StringField()
+
 
 class ComponentReference(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
     code = micromodels.StringField()
+
 
 class Component(micromodels.Model):
     id = micromodels.StringField()
@@ -107,10 +117,12 @@ class Component(micromodels.Model):
         ref.code = self.code
         return ref
 
+
 class DataDrivenPropertyType(micromodels.Model):
     name = micromodels.StringField()
     requirement = micromodels.BooleanField()
     standardValues = micromodels.FieldCollectionField(micromodels.StringField)
+
 
 class Project(micromodels.Model):
     id = micromodels.StringField()
@@ -133,14 +145,17 @@ class Project(micromodels.Model):
         reference.name = self.name
         return reference
 
+
 class ProjectReference(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
+
 
 class ProductVersion(micromodels.Model):
     """This class represents a version of a product.  The only product included with slick for now is 'slick'"""
     productName = micromodels.StringField()
     versionString = micromodels.StringField()
+
 
 class TestcaseQuery(micromodels.Model):
     queryDescription = micromodels.StringField()
@@ -152,9 +167,11 @@ class NamedTestCaseQuery(micromodels.Model):
     name = micromodels.StringField()
     query = micromodels.ModelField(TestcaseQuery)
 
+
 class Step(micromodels.Model):
     name = micromodels.StringField()
     expectedResult = micromodels.StringField()
+
 
 class TestcaseReference(micromodels.Model):
     testcaseId = micromodels.StringField()
@@ -162,6 +179,7 @@ class TestcaseReference(micromodels.Model):
     automationId = micromodels.StringField()
     automationKey = micromodels.StringField()
     automationTool = micromodels.StringField()
+
 
 class Testcase(micromodels.Model):
     id = micromodels.StringField()
@@ -193,6 +211,7 @@ class Testcase(micromodels.Model):
         reference.automationTool = self.automationTool
         return reference
 
+
 class Testplan(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
@@ -202,12 +221,14 @@ class Testplan(micromodels.Model):
     isprivate = micromodels.BooleanField()
     queries = micromodels.ModelCollectionField(NamedTestCaseQuery)
 
+
 class TestplanRunParameters(micromodels.Model):
     config = micromodels.ModelField(ConfigurationReference)
     runtimeOptions = micromodels.ModelField(ConfigurationReference)
     release = micromodels.ModelField(ReleaseReference)
     build = micromodels.ModelField(BuildReference)
     configurationOverride = micromodels.ModelCollectionField(ConfigurationOverride)
+
 
 class ResultsByStatus(micromodels.Model):
     PASS = micromodels.IntegerField()
@@ -218,11 +239,13 @@ class ResultsByStatus(micromodels.Model):
     NO_RESULT = micromodels.IntegerField()
     CANCELLED = micromodels.IntegerField()
 
+
 class TestrunSummary(micromodels.Model):
     totalTime = micromodels.IntegerField()
     resultsByStatus = micromodels.ModelField(ResultsByStatus)
     statusListOrdered = micromodels.FieldCollectionField(micromodels.StringField())
     total = micromodels.IntegerField()
+
 
 class SlickUpdate(micromodels.Model):
     updateId = micromodels.StringField()
@@ -230,9 +253,11 @@ class SlickUpdate(micromodels.Model):
     name = micromodels.StringField()
     needsApplying = micromodels.BooleanField()
 
+
 class TestrunReference(micromodels.Model):
     testrunId = micromodels.StringField()
     name = micromodels.StringField()
+
 
 class Testrun(micromodels.Model):
     id = micromodels.StringField()
@@ -256,6 +281,7 @@ class Testrun(micromodels.Model):
         ref.name = self.name
         return ref
 
+
 class TestrunGroup(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
@@ -263,10 +289,12 @@ class TestrunGroup(micromodels.Model):
     testruns = micromodels.ModelCollectionField(Testrun)
     groupSummary = micromodels.ModelField(TestrunSummary)
 
+
 class TestRunParameter(micromodels.Model):
     fulFilledRequirements = micromodels.BaseField()
     automationTool = micromodels.StringField()
     hostname = micromodels.StringField()
+
 
 class ResultStatus:
     PASS = "PASS"
@@ -277,10 +305,12 @@ class ResultStatus:
     SKIPPED = "SKIPPED"
     CANCELLED = "CANCELLED"
 
+
 class RunStatus:
     TO_BE_RUN = "TO_BE_RUN"
     RUNNING = "RUNNING"
     FINISHED = "FINISHED"
+
 
 class StoredFile(micromodels.Model):
     id = micromodels.StringField()
@@ -291,6 +321,7 @@ class StoredFile(micromodels.Model):
     md5 = micromodels.StringField()
     length = micromodels.IntegerField()
 
+
 class LogEntry(micromodels.Model):
     entryTime = micromodels.DateTimeField(use_int=True)
     level = micromodels.StringField()
@@ -300,21 +331,25 @@ class LogEntry(micromodels.Model):
     exceptionMessage = micromodels.StringField()
     exceptionStackTrace = micromodels.FieldCollectionField(micromodels.StringField())
 
+
 class UpdateRecord(micromodels.Model):
     id = micromodels.StringField()
     updateId = micromodels.StringField()
     logs = micromodels.ModelCollectionField(LogEntry)
+
 
 class ConfigurationOverride(micromodels.Model):
     key = micromodels.StringField()
     value = micromodels.StringField()
     isRequirement = micromodels.BooleanField()
 
+
 class ResultReference(micromodels.Model):
     resultId = micromodels.StringField()
     status = micromodels.StringField()
     recorded = micromodels.DateTimeField(use_int=True)
     build = micromodels.ModelField(BuildReference)
+
 
 class Result(micromodels.Model):
     id = micromodels.StringField()
@@ -337,12 +372,14 @@ class Result(micromodels.Model):
     build = micromodels.ModelField(BuildReference)
     runlength = micromodels.IntegerField()
     history = micromodels.ModelCollectionField(ResultReference)
-    hostname =micromodels.StringField()
+    hostname = micromodels.StringField()
+
 
 class HostStatus(micromodels.Model):
     hostname = micromodels.StringField()
     lastCheckIn = micromodels.DateTimeField(use_int=True)
     currentWork = micromodels.ModelField(Result)
+
 
 class SystemConfiguration(micromodels.Model):
     """
@@ -354,6 +391,7 @@ class SystemConfiguration(micromodels.Model):
     configurationType = micromodels.StringField()
     name = micromodels.StringField()
     className = micromodels.StringField()
+
 
 class AMQPSystemConfiguration(SystemConfiguration):
     """
@@ -371,6 +409,7 @@ class AMQPSystemConfiguration(SystemConfiguration):
         self.className = 'org.tcrun.slickij.api.data.AMQPSystemConfiguration'
         self.configurationType = 'amqp-system-configuration'
 
+
 class EmailTemplateConfiguration(SystemConfiguration):
     """Configuration for email templates.  If the project reference is null, the template is considered global."""
     project = micromodels.ModelField(ProjectReference)
@@ -380,6 +419,7 @@ class EmailTemplateConfiguration(SystemConfiguration):
     def __init__(self):
         self.className = 'org.tcrun.slickij.api.data.EmailTemplateConfiguration'
         self.configurationType = 'email-template-configuration'
+
 
 class EmailSystemConfiguration(SystemConfiguration):
     """Global Slick email configuration settings.  Things like smtp configuration and the sender email address are
@@ -399,6 +439,7 @@ class EmailSystemConfiguration(SystemConfiguration):
         self.configurationType = 'email-system-configuration'
         self.configurationName = 'Global Email System Configuration'
 
+
 class EmailOffSwitch(SystemConfiguration):
     """A way to turn off emails for particular parts of the product"""
     turnOffEmailsForType = micromodels.StringField()
@@ -409,12 +450,14 @@ class EmailOffSwitch(SystemConfiguration):
         self.className = 'org.tcrun.slickij.api.data.EmailOffSwitch'
         self.configurationType = 'email-off-switch'
 
+
 class SubscriptionInfo(micromodels.Model):
     """Data representing an email subscription to events that happen on slick."""
 
     subscriptionType = micromodels.StringField()
     subscriptionValue = micromodels.StringField()
     onStart = micromodels.BooleanField()
+
 
 class EmailSubscription(SystemConfiguration):
     """Email subscriptions have the email address as the name, and embed a list of subscription info models"""

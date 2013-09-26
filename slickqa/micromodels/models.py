@@ -5,14 +5,12 @@ except ImportError:
 
 from .fields import BaseField
 
-class ModelMeta(type):
+
+class MicromodelsMetaclass(type):
     '''Creates the metaclass for Model. The main function of this metaclass
     is to move all of fields into the _fields variable on the class.
-
     '''
     def __init__(cls, name, bases, attrs):
-
-
         cls._clsfields = {}
         for base in bases:
             if hasattr(base, '_clsfields'):
@@ -23,7 +21,10 @@ class ModelMeta(type):
                 delattr(cls, key)
 
 
-class Model(object, metaclass=ModelMeta):
+Micromodelsmc = MicromodelsMetaclass('Micromodelsmc', (object, ), {})
+
+
+class Model(Micromodelsmc):
     """The Model is the main component of micromodels. Model makes it trivial
     to parse data from many sources, including JSON APIs.
 
@@ -64,7 +65,6 @@ class Model(object, metaclass=ModelMeta):
     value are just set on the instance like any other assignment in Python.
 
     """
-
     def __init__(self):
         super(Model, self).__setattr__('_extra', {})
 

@@ -17,12 +17,15 @@ Copyright 2013 AccessData Group, LLC.
 """
 __author__ = 'Jason Corbett'
 
-
 import requests
-from urllib.parse import urlencode, quote
 import logging
 import sys
 import traceback
+
+try:
+    from urllib.parse import urlencode, quote
+except ImportError:
+    from urllib import urlencode, quote
 
 from .micromodels import Model
 from .data import *
@@ -31,6 +34,7 @@ from . import queries
 
 json_content = {'Content-Type': 'application/json'}
 STREAM_CONTENT = {'Content-Type': 'application/octet-stream'}
+
 
 class FindOneModeEnum(object):
     """
@@ -47,12 +51,15 @@ class FindOneModeEnum(object):
 
 FindOneMode = FindOneModeEnum()
 
+
 class AttributeDict(dict):
     __getattr__ = dict.__getitem__
     __setattr__ = dict.__setitem__
 
+
 def obj_hook_attr_dict(dct):
     return AttributeDict(dct)
+
 
 class SlickApiPart(object):
     """A class representing part of the slick api"""
@@ -71,7 +78,6 @@ class SlickApiPart(object):
     def get_name(self):
         return self.parent.get_name() + "." + self.name
 
-
     def find(self, query=None, **kwargs):
         """
         You can pass in the appropriate model object from the queries module,
@@ -88,7 +94,6 @@ class SlickApiPart(object):
             url = url + "?" + urlencode(kwargs)
 
         # hopefully when we discover what problems exist in slick to require this, we can take the loop out
-        r = None
         for retry in range(3):
             try:
                 self.logger.debug("Making request to slick at url %s", url)
@@ -104,9 +109,8 @@ class SlickApiPart(object):
                     self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
                 self.logger.warn("Received exception while connecting to slick at %s", url, exc_info=sys.exc_info())
-        raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
-
-
+        raise SlickCommunicationError(
+            "Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     query = find
 
@@ -135,7 +139,6 @@ class SlickApiPart(object):
         url = self.getUrl()
 
         # hopefully when we discover what problems exist in slick to require this, we can take the loop out
-        r = None
         for retry in range(3):
             try:
                 self.logger.debug("Making request to slick at url %s", url)
@@ -147,7 +150,8 @@ class SlickApiPart(object):
                     self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
                 self.logger.warn("Received exception while connecting to slick at %s", url, exc_info=sys.exc_info())
-        raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
+        raise SlickCommunicationError(
+            "Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     def update(self):
         """Update the specified object from slick.  You specify the object as a parameter, using the parent object as
@@ -160,7 +164,6 @@ class SlickApiPart(object):
         url = self.getUrl()
 
         # hopefully when we discover what problems exist in slick to require this, we can take the loop out
-        r = None
         for retry in range(3):
             try:
                 json_data = obj.to_json()
@@ -174,7 +177,8 @@ class SlickApiPart(object):
             except BaseException as error:
                 self.logger.warn("Received exception while connecting to slick at %s", url, exc_info=sys.exc_info())
                 traceback.print_exc()
-        raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
+        raise SlickCommunicationError(
+            "Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     put = update
 
@@ -190,7 +194,6 @@ class SlickApiPart(object):
         url = self.getUrl()
 
         # hopefully when we discover what problems exist in slick to require this, we can take the loop out
-        r = None
         for retry in range(3):
             try:
                 json_data = obj.to_json()
@@ -203,7 +206,8 @@ class SlickApiPart(object):
                     self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
                 self.logger.warn("Received exception while connecting to slick at %s", url, exc_info=sys.exc_info())
-        raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
+        raise SlickCommunicationError(
+            "Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     post = create
 
@@ -215,7 +219,6 @@ class SlickApiPart(object):
         url = self.getUrl()
 
         # hopefully when we discover what problems exist in slick to require this, we can take the loop out
-        r = None
         for retry in range(3):
             try:
                 self.logger.debug("Making DELETE request to slick at url %s", url)
@@ -227,20 +230,18 @@ class SlickApiPart(object):
                     self.logger.debug("Body of what slick returned: %s", r.text)
             except BaseException as error:
                 self.logger.warn("Received exception while connecting to slick at %s", url, exc_info=sys.exc_info())
-        raise SlickCommunicationError("Tried 3 times to request data from slick at url %s without a successful status code.", url)
+        raise SlickCommunicationError(
+            "Tried 3 times to request data from slick at url %s without a successful status code.", url)
 
     delete = remove
-
-    #def findOrCreate(self):
-
 
     def getUrl(self):
         url = self.parent.getUrl() + "/" + self.name
         if self.data is not None:
             if isinstance(self.data, Model) and hasattr(self.data, 'id'):
-                url = url +  "/" + self.data.id
+                url = url + "/" + self.data.id
             else:
-                url = url +  "/" + str(self.data)
+                url = url + "/" + str(self.data)
             self.data = None
         return url
 
@@ -249,8 +250,8 @@ class SlickApiPart(object):
             self.data = args[0]
         return self
 
-class SlickProjectApiPart(SlickApiPart):
 
+class SlickProjectApiPart(SlickApiPart):
     def __init__(self, parentPart):
         super(SlickProjectApiPart, self).__init__(Project, parentPart)
 
@@ -258,6 +259,7 @@ class SlickProjectApiPart(SlickApiPart):
         """Find a project by it's name"""
         self.data = "byname/" + quote(name)
         return self.get()
+
 
 class SystemConfigurationApiPart(SlickApiPart):
     """
@@ -274,7 +276,7 @@ class SystemConfigurationApiPart(SlickApiPart):
         """
         self.model = model
         if data is not None:
-            return(super(SystemConfigurationApiPart, self).__call__(data))
+            return super(SystemConfigurationApiPart, self).__call__(data)
         else:
             return self
 
@@ -287,6 +289,7 @@ class SystemConfigurationApiPart(SlickApiPart):
 
 class SlickCommunicationError(Exception):
     pass
+
 
 class SlickConnection(object):
     """Slick Connection contains the information on how to connect to slick."""
@@ -325,6 +328,3 @@ class SlickConnection(object):
 
     def get_name(self):
         return "slick"
-
-
-
