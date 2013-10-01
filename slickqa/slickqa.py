@@ -165,7 +165,7 @@ class SlickQA(object):
         self.logger.debug("Creating testrun with name {}.", testrun.name)
         self.testrun = self.slickcon.testruns(testrun).create()
 
-    def add_log_entry(self, message, level='', loggername='', exceptionclassname='', exceptionmessage='', stacktrace=''):
+    def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassname='', exceptionmessage='', stacktrace=''):
         entry = LogEntry()
         entry.entryTime = int(round(time.time() * 1000))
         entry.message = message
@@ -206,7 +206,8 @@ class SlickQA(object):
         if self.component is not None:
             result.component = self.componentref
         if len(self.logqueue) > 0:
-            result.log = {'log': self.logqueue}
+            result.log = []
+            result.log.extend(self.logqueue)
             self.logqueue[:] = []
         result.reason = reason
         result.runlength = runlength
