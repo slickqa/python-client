@@ -1,8 +1,9 @@
 import logging
 import time
 
+from .micromodels.fields import ModelCollectionField
 from . import SlickConnection, SlickCommunicationError, Release, Build, BuildReference, Component, ComponentReference, \
-    Project, Testplan, Testrun, Testcase, RunStatus, Result, ResultStatus
+    Project, Testplan, Testrun, Testcase, RunStatus, Result, ResultStatus, LogEntry
 
 
 class SlickQA(object):
@@ -20,6 +21,7 @@ class SlickQA(object):
         self.buildref = None
         self.testrun = test_run
         self.testrunref = None
+        self.logqueue = []
 
         self.init_connection(url)
         if self.is_connected:
@@ -29,6 +31,7 @@ class SlickQA(object):
             self.init_build()
             self.init_testplan()
             self.init_testrun()
+            # TODO: if you have a list of test cases, add results for each with notrun status
 
     def init_connection(self, url):
         try:
@@ -162,9 +165,16 @@ class SlickQA(object):
         self.logger.debug("Creating testrun with name {}.", testrun.name)
         self.testrun = self.slickcon.testruns(testrun).create()
 
-    def add_log_entry(self, message):
-
-        pass
+    def add_log_entry(self, message, level='', loggername='', exceptionclassname='', exceptionmessage='', stacktrace=''):
+        entry = LogEntry()
+        entry.entryTime = int(round(time.time() * 1000))
+        entry.message = message
+        entry.level = level
+        entry.loggerName = loggername
+        entry.exceptionClassName = exceptionclassname
+        entry.exceptionMessage = exceptionmessage
+        entry.exceptionStackTrace = stacktrace
+        self.logqueue.append(entry)
 
     def finish_testrun(self):
         assert isinstance(self.testrun, Testrun)
@@ -195,6 +205,9 @@ class SlickQA(object):
         result.build = self.buildref
         if self.component is not None:
             result.component = self.componentref
+        if len(self.logqueue) > 0:
+            result.log = {'log': self.logqueue}
+            self.logqueue[:] = []
         result.reason = reason
         result.runlength = runlength
         result.end = int(round(time.time() * 1000))
