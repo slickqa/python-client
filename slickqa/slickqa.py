@@ -152,7 +152,10 @@ class SlickQA(object):
 
     def init_testrun(self):
         testrun = Testrun()
-        testrun.name = 'Tests run from slick-python'
+        if self.testrun is not None:
+            testrun.name = self.testrun
+        else:
+            testrun.name = 'Tests run from slick-python'
         if self.testplan is not None:
             testrun.name = 'Testrun for testplan {}'.format(self.testplan.name)
             testrun.testplanid = self.testplan.id
