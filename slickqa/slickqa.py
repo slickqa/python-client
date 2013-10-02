@@ -155,10 +155,11 @@ class SlickQA(object):
         if self.testrun is not None:
             testrun.name = self.testrun
         else:
-            testrun.name = 'Tests run from slick-python'
-        if self.testplan is not None:
-            testrun.name = 'Testrun for testplan {}'.format(self.testplan.name)
-            testrun.testplanid = self.testplan.id
+            if self.testplan is not None:
+                testrun.name = 'Testrun for testplan {}'.format(self.testplan.name)
+                testrun.testplanid = self.testplan.id
+            else:
+                testrun.name = 'Tests run from slick-python'
         testrun.project = self.project.create_reference()
         testrun.release = self.releaseref
         testrun.build = self.buildref
@@ -182,6 +183,10 @@ class SlickQA(object):
     def finish_testrun(self):
         assert isinstance(self.testrun, Testrun)
         testrun = Testrun()
+        if self.testrun.name:
+            testrun.name = self.testrun.name
+        else:
+            testrun.name = 'Tests run from slick-python'
         testrun.id = self.testrun.id
         testrun.runFinished = int(round(time.time() * 1000))
         testrun.state = RunStatus.FINISHED
