@@ -7,6 +7,18 @@ from . import SlickConnection, SlickCommunicationError, Release, Build, BuildRef
     Project, Testplan, Testrun, Testcase, RunStatus, Result, ResultStatus, LogEntry
 
 
+def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassname='', exceptionmessage='', stacktrace=''):
+    entry = LogEntry()
+    entry.entryTime = int(round(time.time() * 1000))
+    entry.message = message
+    entry.level = level
+    entry.loggerName = loggername
+    entry.exceptionClassName = exceptionclassname
+    entry.exceptionMessage = exceptionmessage
+    entry.exceptionStackTrace = stacktrace
+    if not self.log:
+        self.log = []
+    self.log.append(entry)
 
 def update_result(self):
     self.connection.results(self).update()
@@ -22,6 +34,7 @@ def make_result_updatable(result, connection):
     result.connection = connection
     result.update = types.MethodType(update_result, result)
     result.add_file = types.MethodType(add_file_to_result, result)
+    result.add_log_entry = types.MethodType(add_log_entry, result)
 
 class SlickQA(object):
     def __init__(self, url, project_name, release_name, build_name, test_plan=None, test_run=None):
