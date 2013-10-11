@@ -141,6 +141,8 @@ class DateTimeField(BaseField):
 
     def to_serial(self, time_obj):
         if self.use_int:
+            if not time_obj:
+                return 0
             s = time_obj - datetime.datetime.utcfromtimestamp(0)
             t = s.total_seconds() * 1000
             return int(round(t))
