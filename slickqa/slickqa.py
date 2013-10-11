@@ -11,9 +11,17 @@ from . import SlickConnection, SlickCommunicationError, Release, Build, BuildRef
 def update_result(self):
     self.connection.results(self).update()
 
+def add_file_to_result(self, filename):
+    slickfile = self.connection.files.upload_local_file(filename)
+    if not self.files:
+        self.files = []
+    self.files.append(slickfile)
+    self.update()
+
 def make_result_updatable(result, connection):
     result.connection = connection
     result.update = types.MethodType(update_result, result)
+    result.add_file = types.MethodType(add_file_to_result, result)
 
 class SlickQA(object):
     def __init__(self, url, project_name, release_name, build_name, test_plan=None, test_run=None):
