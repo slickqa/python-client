@@ -224,16 +224,33 @@ class SlickQA(object):
         self.slickcon.testruns(testrun).update()
     # TODO: need to add logs, files, etc. to a result
 
-    def file_result(self, name, status=ResultStatus.FAIL, reason=None, runlength=0):
-        test = self.slickcon.testcases.findOne(projectid=self.project.id, name=name)
+    def file_result(self, name, status=ResultStatus.FAIL, reason=None, runlength=0, testdata=None, runstatus=RunStatus.FINISHED):
+        test = None
+        if testdata is not None:
+            assert isinstance(testdata, Testcase)
+            if testdata.automationId:
+                test = self.slickcon.testcases.findOne(projectid=self.project.id, automationId=testdata.automationId)
+            if test is None and testdata.automationKey is not None:
+                test = self.slickcon.testcases.findOne(projectid=self.project.id, automationKey=testdata.automationId)
+        if test is None:
+            test = self.slickcon.testcases.findOne(projectid=self.project.id, name=name)
         if test is None:
             self.logger.debug("Creating testcase with name '{}' on project '{}'.", name, self.project.name)
             test = Testcase()
+            if testdata is not None:
+                test = testdata
             test.name = name
             test.project = self.project.create_reference()
             test = self.slickcon.testcases(test).create()
             self.logger.info("Using newly created testcase with name '{}' and id '{}' for result.", name, test.id)
         else:
+            if testdata is not None:
+                # update the test with the data passed in
+                assert isinstance(test, Testcase)
+                testdata.id = test.id
+                testdata.name = name
+                testdata.project = self.project.create_reference()
+                test = self.slickcon.testcases(testdata).update()
             self.logger.info("Found testcase with name '{}' and id '{}' for result.", test.name, test.id)
         result = Result()
         result.testrun = self.testrun.create_reference()
@@ -252,6 +269,7 @@ class SlickQA(object):
         result.end = int(round(time.time() * 1000))
         result.started = result.end - result.runlength
         result.status = status
+        result.runstatus = runstatus
         self.logger.debug("Filing result of '{}' for test with name '{}'", result.status, result.testcase.name)
         result = self.slickcon.results(result).create()
         self.logger.info("Filed result of '{}' for test '{}', result id: {}", result.status, result.testcase.name,
