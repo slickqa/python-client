@@ -1,10 +1,19 @@
 import logging
 import time
+import types
 
 from .micromodels.fields import ModelCollectionField
 from . import SlickConnection, SlickCommunicationError, Release, Build, BuildReference, Component, ComponentReference, \
     Project, Testplan, Testrun, Testcase, RunStatus, Result, ResultStatus, LogEntry
 
+
+
+def update_result(self):
+    self.connection.results(self).update()
+
+def make_result_updatable(result, connection):
+    result.connection = connection
+    result.update = types.MethodType(update_result, result)
 
 class SlickQA(object):
     def __init__(self, url, project_name, release_name, build_name, test_plan=None, test_run=None):
@@ -226,4 +235,5 @@ class SlickQA(object):
         result = self.slickcon.results(result).create()
         self.logger.info("Filed result of '{}' for test '{}', result id: {}", result.status, result.testcase.name,
                          result.id)
-        return result.id
+        make_result_updatable(result, self.slickcon)
+        return result
