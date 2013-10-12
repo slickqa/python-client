@@ -160,6 +160,7 @@ class SlickQA(object):
         self.componentref = self.component.create_reference()
         self.logger.info("Using newly created component '{}' with id '{}' in project '{}'.".format(
                          self.component.name, self.component.id, self.project.name))
+        return self.component
 
     def init_testplan(self):
         if self.testplan:
