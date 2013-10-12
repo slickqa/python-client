@@ -231,7 +231,7 @@ class SlickQA(object):
             assert isinstance(testdata, Testcase)
             if testdata.automationId:
                 test = self.slickcon.testcases.findOne(projectid=self.project.id, automationId=testdata.automationId)
-            if test is None and testdata.automationKey is not None:
+            if test is None and hasattr(testdata, 'automationKey') and testdata.automationKey is not None:
                 test = self.slickcon.testcases.findOne(projectid=self.project.id, automationKey=testdata.automationId)
         if test is None:
             test = self.slickcon.testcases.findOne(projectid=self.project.id, name=name)
