@@ -156,6 +156,7 @@ class SlickQA(object):
         component = Component()
         component.name = component_name
         self.component = self.slickcon.projects(self.project).components(component).create()
+        self.project.components.append(component)
         self.componentref = self.component.create_reference()
         self.logger.info("Using newly created component '{}' with id '{}' in project '{}'.".format(
                          self.component.name, self.component.id, self.project.name))
