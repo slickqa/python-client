@@ -85,97 +85,97 @@ class SlickQA(object):
         return False
 
     def init_project(self, project, create=True):
-        self.logger.debug("Looking for project by name '{}'.", project)
+        self.logger.debug("Looking for project by name '{}'.".format(project))
         try:
             self.project = self.slickcon.projects.findByName(project)
         except SlickCommunicationError as err:
-            self.logger.error("Error communicating with slick: {}", err.args[0])
+            self.logger.error("Error communicating with slick: {}".format(err.args[0]))
         if self.project is None and create:
-            self.logger.error("Unable to find project with name '{}', creating...", self.project)
+            self.logger.error("Unable to find project with name '{}', creating...".format(self.project))
             self.project = Project()
             self.project.name = project
             self.project = self.slickcon.projects(self.project).create()
 
         assert (isinstance(self.project, Project))
-        self.logger.info("Using project with name '{}' and id: {}.", self.project.name, self.project.id)
+        self.logger.info("Using project with name '{}' and id: {}.".format(self.project.name, self.project.id))
 
     def init_release(self):
         release_name = self.release
-        self.logger.debug("Looking for release '{}' in project '{}'", release_name, self.project.name)
+        self.logger.debug("Looking for release '{}' in project '{}'".format(release_name, self.project.name))
         for release in self.project.releases:
             assert isinstance(release, Release)
             if release.name == release_name:
-                self.logger.info("Found Release '{}' with id '{}' in Project '{}'.", release.name, release.id,
-                                 self.project.id)
+                self.logger.info("Found Release '{}' with id '{}' in Project '{}'.".format(release.name, release.id,
+                                 self.project.id))
                 self.release = release
                 self.releaseref = release.create_reference()
                 break
         else:
-            self.logger.info("Adding release {} to project {}.", release_name, self.project.name)
+            self.logger.info("Adding release {} to project {}.".format(release_name, self.project.name))
             release = Release()
             release.name = release_name
             self.release = self.slickcon.projects(self.project).releases(release).create()
             assert isinstance(self.release, Release)
             self.project.releases.append(self.release)
             self.releaseref = self.release.create_reference()
-            self.logger.info("Using newly created release '{}' with id '{}' in Project '{}'.", self.release.name,
-                             self.release.id, self.project.name)
+            self.logger.info("Using newly created release '{}' with id '{}' in Project '{}'.".format(self.release.name,
+                             self.release.id, self.project.name))
 
     def init_build(self):
         build_number = self.build
         for build in self.release.builds:
             if build.name == build_number:
-                self.logger.debug("Found build with name '{}' and id '{}' on release '{}'", build.name, build.id,
-                                  self.release.name)
+                self.logger.debug("Found build with name '{}' and id '{}' on release '{}'".format(build.name, build.id,
+                                  self.release.name))
                 self.buildref = build.create_reference()
                 break
         else:
-            self.logger.info("Adding build {} to release {}.", build_number, self.release.name)
+            self.logger.info("Adding build {} to release {}.".format(build_number, self.release.name))
             build = Build()
             build.name = build_number
             self.buildref = (
                 self.slickcon.projects(self.project).releases(self.release).builds(build).create()).create_reference()
             assert isinstance(self.buildref, BuildReference)
-            self.logger.info("Using newly created build '{}' with id '{}' in Release '{}' in Project '{}'.",
-                             self.buildref.name, self.buildref.buildId, self.release.name, self.project.name)
+            self.logger.info("Using newly created build '{}' with id '{}' in Release '{}' in Project '{}'.".format(
+                             self.buildref.name, self.buildref.buildId, self.release.name, self.project.name))
 
     def get_component(self, component_name):
-        self.logger.debug("Looking for component with name '{}' in project '{}'", component_name, self.project.name)
+        self.logger.debug("Looking for component with name '{}' in project '{}'".format(component_name, self.project.name))
         for comp in self.project.components:
             if comp.name == component_name:
                 assert isinstance(comp, Component)
-                self.logger.info("Found component with name '{}' and id '{}' in project '{}'.", comp.name, comp.id,
-                                 self.project.name)
+                self.logger.info("Found component with name '{}' and id '{}' in project '{}'.".format(comp.name, comp.id,
+                                 self.project.name))
                 self.component = comp
                 self.componentref = self.component.create_reference()
                 assert isinstance(self.componentref, ComponentReference)
                 break
 
     def create_component(self, component_name):
-        self.logger.info("Adding component {} to project {}.", component_name, self.project.name)
+        self.logger.info("Adding component {} to project {}.".format(component_name, self.project.name))
         component = Component()
         component.name = component_name
         self.component = self.slickcon.projects(self.project).components(component).create()
         self.componentref = self.component.create_reference()
-        self.logger.info("Using newly created component '{}' with id '{}' in project '{}'.",
-                         self.component.name, self.component.id, self.project.name)
+        self.logger.info("Using newly created component '{}' with id '{}' in project '{}'.".format(
+                         self.component.name, self.component.id, self.project.name))
 
     def init_testplan(self):
         if self.testplan:
             testplan_name = self.testplan
             testplan = self.slickcon.testplans.findOne(projectid=self.project.id, name=testplan_name)
             if testplan is None:
-                self.logger.debug("Creating testplan with name '{}' connected to project '{}'.", testplan_name,
-                                  self.project.name)
+                self.logger.debug("Creating testplan with name '{}' connected to project '{}'.".format(testplan_name,
+                                  self.project.name))
                 testplan = Testplan()
                 testplan.name = testplan_name
                 testplan.project = self.project.create_reference()
                 testplan.isprivate = False
                 testplan.createdBy = "slickqa-python"
                 testplan = self.slickcon.testplans(testplan).create()
-                self.logger.info("Using newly create testplan '{}' with id '{}'.", testplan.name, testplan.id)
+                self.logger.info("Using newly create testplan '{}' with id '{}'.".format(testplan.name, testplan.id))
             else:
-                self.logger.info("Found (and using) existing testplan '{}' with id '{}'.", testplan.name, testplan.id)
+                self.logger.info("Found (and using) existing testplan '{}' with id '{}'.".format(testplan.name, testplan.id))
             self.testplan = testplan
         else:
             self.logger.warn("No testplan specified for the testrun.")
@@ -196,7 +196,7 @@ class SlickQA(object):
         testrun.state = RunStatus.RUNNING
         testrun.runStarted = int(round(time.time() * 1000))
 
-        self.logger.debug("Creating testrun with name {}.", testrun.name)
+        self.logger.debug("Creating testrun with name {}.".format(testrun.name))
         self.testrun = self.slickcon.testruns(testrun).create()
 
     def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassname='', exceptionmessage='', stacktrace=''):
@@ -220,7 +220,7 @@ class SlickQA(object):
         testrun.id = self.testrun.id
         testrun.runFinished = int(round(time.time() * 1000))
         testrun.state = RunStatus.FINISHED
-        self.logger.debug("Finishing testrun named {}.", testrun.name)
+        self.logger.debug("Finishing testrun named {}.".format(testrun.name))
         self.slickcon.testruns(testrun).update()
     # TODO: need to add logs, files, etc. to a result
 
@@ -235,14 +235,14 @@ class SlickQA(object):
         if test is None:
             test = self.slickcon.testcases.findOne(projectid=self.project.id, name=name)
         if test is None:
-            self.logger.debug("Creating testcase with name '{}' on project '{}'.", name, self.project.name)
+            self.logger.debug("Creating testcase with name '{}' on project '{}'.".format(name, self.project.name))
             test = Testcase()
             if testdata is not None:
                 test = testdata
             test.name = name
             test.project = self.project.create_reference()
             test = self.slickcon.testcases(test).create()
-            self.logger.info("Using newly created testcase with name '{}' and id '{}' for result.", name, test.id)
+            self.logger.info("Using newly created testcase with name '{}' and id '{}' for result.".format(name, test.id))
         else:
             if testdata is not None:
                 # update the test with the data passed in
@@ -251,7 +251,7 @@ class SlickQA(object):
                 testdata.name = name
                 testdata.project = self.project.create_reference()
                 test = self.slickcon.testcases(testdata).update()
-            self.logger.info("Found testcase with name '{}' and id '{}' for result.", test.name, test.id)
+            self.logger.info("Found testcase with name '{}' and id '{}' for result.".format(test.name, test.id))
         result = Result()
         result.testrun = self.testrun.create_reference()
         result.testcase = test.create_reference()
@@ -270,9 +270,9 @@ class SlickQA(object):
         result.started = result.end - result.runlength
         result.status = status
         result.runstatus = runstatus
-        self.logger.debug("Filing result of '{}' for test with name '{}'", result.status, result.testcase.name)
+        self.logger.debug("Filing result of '{}' for test with name '{}'".format(result.status, result.testcase.name))
         result = self.slickcon.results(result).create()
-        self.logger.info("Filed result of '{}' for test '{}', result id: {}", result.status, result.testcase.name,
-                         result.id)
+        self.logger.info("Filed result of '{}' for test '{}', result id: {}".format(result.status, result.testcase.name,
+                         result.id))
         make_result_updatable(result, self.slickcon)
         return result
