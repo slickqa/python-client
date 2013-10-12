@@ -149,7 +149,7 @@ class SlickQA(object):
                 self.component = comp
                 self.componentref = self.component.create_reference()
                 assert isinstance(self.componentref, ComponentReference)
-                break
+                return self.component
 
     def create_component(self, component_name):
         self.logger.info("Adding component {} to project {}.".format(component_name, self.project.name))
