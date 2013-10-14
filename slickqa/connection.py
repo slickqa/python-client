@@ -317,7 +317,12 @@ class StoredFileApiPart(SlickApiPart):
         storedfile = StoredFile()
         storedfile.mimetype = mimetypes.guess_type(local_file_path)
         storedfile.filename = os.path.basename(local_file_path)
-        storedfile.length = os.stat(local_file_path).st_size
+        if file_obj is None:
+            storedfile.length = os.stat(local_file_path).st_size
+        else:
+            file_obj.seek(0,os.SEEK_END)
+            storedfile.length = file_obj.tell()
+            file_obj.seek(0)
         storedfile = self(storedfile).create()
         md5 = hashlib.md5()
         url = self(storedfile).getUrl() + "/addchunk"
