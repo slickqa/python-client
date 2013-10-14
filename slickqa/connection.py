@@ -290,12 +290,21 @@ class SystemConfigurationApiPart(SlickApiPart):
             kwargs['config-type'] = instance.configurationType
         return super(SystemConfigurationApiPart, self).find(query, **kwargs)
 
+def upload_chunks(url, stored_file, file_like_obj):
+    md5 = hashlib.md5()
+    bindata = file_like_obj.read(stored_file.chunkSize)
+    while bindata:
+        md5.update(bindata)
+        requests.post(url, data=bindata, headers={'Content-Type': 'application/octet-stream'})
+        bindata = file_like_obj.read(stored_file.chunkSize)
+    stored_file.md5 = md5.hexdigest()
+
 class StoredFileApiPart(SlickApiPart):
 
     def __init__(self, parentPart):
         super(StoredFileApiPart, self).__init__(StoredFile, parentPart, "files")
 
-    def upload_local_file(self, local_file_path):
+    def upload_local_file(self, local_file_path, file_obj=None):
         """Create a Stored File and upload it's data.  This is a one part do it all type method.  Here is what
         it does:
             1. "Discover" information about the file (mime-type, size)
@@ -303,23 +312,21 @@ class StoredFileApiPart(SlickApiPart):
             3. Upload (chunked) all the data in the local file
             4. re-fetch the stored file object from slick, and return it
         """
-
-        if os.path.exists(local_file_path):
-            storedfile = StoredFile()
-            storedfile.mimetype = mimetypes.guess_type(local_file_path)
-            storedfile.filename = os.path.basename(local_file_path)
-            storedfile.length = os.stat(local_file_path).st_size
-            storedfile = self(storedfile).create()
-            md5 = hashlib.md5()
-            url = self(storedfile).getUrl() + "/addchunk"
+        if file_obj is None and not os.path.exists(local_file_path):
+            return
+        storedfile = StoredFile()
+        storedfile.mimetype = mimetypes.guess_type(local_file_path)
+        storedfile.filename = os.path.basename(local_file_path)
+        storedfile.length = os.stat(local_file_path).st_size
+        storedfile = self(storedfile).create()
+        md5 = hashlib.md5()
+        url = self(storedfile).getUrl() + "/addchunk"
+        if file_obj is None:
             with open(local_file_path, 'r') as filecontents:
-                bindata = filecontents.read(storedfile.chunkSize)
-                while bindata:
-                    md5.update(bindata)
-                    requests.post(url, data=bindata, headers={'Content-Type': 'application/octet-stream'})
-                    bindata = filecontents.read(storedfile.chunkSize)
-                storedfile.md5 = md5.hexdigest()
-            return self(storedfile).update()
+                upload_chunks(url, storedfile, filecontents)
+        else:
+            upload_chunks(url, storedfile, file_obj)
+        return self(storedfile).update()
 
 
 
