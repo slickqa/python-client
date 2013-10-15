@@ -334,9 +334,9 @@ class StoredFileApiPart(SlickApiPart):
         return self(storedfile).update()
 
 
-
 class SlickCommunicationError(Exception):
-    pass
+    def __init__(self, message):
+        self.message = message
 
 
 class SlickConnection(object):
