@@ -335,8 +335,8 @@ class StoredFileApiPart(SlickApiPart):
 
 
 class SlickCommunicationError(Exception):
-    def __init__(self, message):
-        self.message = message
+    def __init__(self, *args, **kwargs):
+        super(SlickCommunicationError, self).__init__(*args, **kwargs)
 
 
 class SlickConnection(object):
