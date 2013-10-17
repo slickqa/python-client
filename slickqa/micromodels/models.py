@@ -3,7 +3,7 @@ try:
 except ImportError:
     import simplejson as json
 
-from .fields import BaseField
+from .fields import BaseField, WrappedObjectField
 
 
 class MicromodelsMetaclass(type):
@@ -97,7 +97,12 @@ class Model(Micromodelsmc):
         for name, field in self._clsfields.items():
             key = field.source or name
             if key in data:
-                setattr(self, name, data.get(key))
+                # modified by Jason Corbett Oct 16, 2013 if statement added
+                # reason: if it's a sub object (embedded object) and the value is None we shouldn't set it
+                # needed by slick specifically.  The best thing to do would be:
+                # TODO: make the input JSON match the output JSON by setting value to None and still serializing correctly
+                if (not isinstance(field, WrappedObjectField)) or data.get(key) is not None:
+                    setattr(self, name, data.get(key))
 
     def __setattr__(self, key, value):
         if key in self._fields:

@@ -19,12 +19,6 @@ for result in results:
     result.started = datetime.datetime.now()
     result.runstatus = RunStatus.RUNNING
 
-    # I will fix this, I promise
-    if hasattr(result, 'config') and not hasattr(result.config, 'configId'):
-        del result.config
-    if hasattr(result, 'component') and not hasattr(result.component, 'id'):
-        del result.component
-
     # this updates slick with those properties we just set
     result.update()
 
@@ -34,13 +28,6 @@ for result in results:
     # add a log entry (will not automatically update the result in slick)
     result.add_log_entry("Log Entry, isn't it nice?", level="INFO", loggername="example.test")
     result.add_log_entry("Log Entry, isn't it nice?", level="ERROR", loggername="example.test")
-
-    # do an update
-    # I will fix this, I promise
-    if hasattr(result, 'config') and not hasattr(result.config, 'configId'):
-        del result.config
-    if hasattr(result, 'component') and not hasattr(result.component, 'id'):
-        del result.component
 
     # this updates slick with those properties we just set
     result.update()
@@ -56,12 +43,6 @@ for result in results:
     result.status = ResultStatus.PASS
     result.reason = "Because I said"
     result.runstatus = RunStatus.FINISHED
-
-    # I will fix this, I promise
-    if hasattr(result, 'config') and not hasattr(result.config, 'configId'):
-        del result.config
-    if hasattr(result, 'component') and not hasattr(result.component, 'id'):
-        del result.component
 
     # this updates slick with those properties we just set
     result.update()

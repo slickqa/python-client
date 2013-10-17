@@ -16,7 +16,7 @@ def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassnam
     entry.exceptionClassName = exceptionclassname
     entry.exceptionMessage = exceptionmessage
     entry.exceptionStackTrace = stacktrace
-    if not self.log:
+    if not hasattr(self, 'log'):
         self.log = []
     self.log.append(entry)
 
@@ -25,7 +25,7 @@ def update_result(self):
 
 def add_file_to_result(self, filename):
     slickfile = self.connection.files.upload_local_file(filename)
-    if not self.files:
+    if not hasattr(self, 'files'):
         self.files = []
     self.files.append(slickfile)
     self.update()
