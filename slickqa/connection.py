@@ -327,7 +327,7 @@ class StoredFileApiPart(SlickApiPart):
         md5 = hashlib.md5()
         url = self(storedfile).getUrl() + "/addchunk"
         if file_obj is None:
-            with open(local_file_path, 'r') as filecontents:
+            with open(local_file_path, 'rb') as filecontents:
                 upload_chunks(url, storedfile, filecontents)
         else:
             upload_chunks(url, storedfile, file_obj)
