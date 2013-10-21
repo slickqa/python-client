@@ -102,6 +102,8 @@ class SlickQA(object):
     def init_release(self):
         release_name = self.release
         self.logger.debug("Looking for release '{}' in project '{}'".format(release_name, self.project.name))
+        if not hasattr(self.project, 'releases'):
+            self.project.releases = []
         for release in self.project.releases:
             assert isinstance(release, Release)
             if release.name == release_name:
@@ -116,13 +118,15 @@ class SlickQA(object):
             release.name = release_name
             self.release = self.slickcon.projects(self.project).releases(release).create()
             assert isinstance(self.release, Release)
-            self.project.releases.append(self.release)
+            self.project = self.slickcon.projects(self.project).get()
             self.releaseref = self.release.create_reference()
             self.logger.info("Using newly created release '{}' with id '{}' in Project '{}'.".format(self.release.name,
                              self.release.id, self.project.name))
 
     def init_build(self):
         build_number = self.build
+        if not hasattr(self.release, 'builds'):
+            self.release.builds = []
         for build in self.release.builds:
             if build.name == build_number:
                 self.logger.debug("Found build with name '{}' and id '{}' on release '{}'".format(build.name, build.id,
