@@ -262,7 +262,7 @@ class TestrunReference(micromodels.Model):
 class Testrun(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
-    testplanid = micromodels.StringField()
+    testplanId = micromodels.StringField()
     testplan = micromodels.ModelField(Testplan)
     config = micromodels.ModelField(ConfigurationReference)
     runtimeOptions = micromodels.ModelField(ConfigurationReference)
