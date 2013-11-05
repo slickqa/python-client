@@ -1,10 +1,11 @@
 import logging
 import time
+from datetime import datetime
 import types
 
 from .micromodels.fields import ModelCollectionField
 from . import SlickConnection, SlickCommunicationError, Release, Build, BuildReference, Component, ComponentReference, \
-    Project, Testplan, Testrun, Testcase, RunStatus, Result, ResultStatus, LogEntry
+    Project, Testplan, Testrun, Testcase, RunStatus, Result, ResultStatus, LogEntry, Configuration, TestrunGroup, TestrunReference
 
 
 def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassname='', exceptionmessage='', stacktrace=''):
@@ -37,11 +38,12 @@ def make_result_updatable(result, connection):
     result.add_log_entry = types.MethodType(add_log_entry, result)
 
 class SlickQA(object):
-    def __init__(self, url, project_name, release_name, build_name, test_plan=None, test_run=None):
+    def __init__(self, url, project_name, release_name, build_name, test_plan=None, test_run=None, environment_name=None, test_run_group_name=None):
         self.logger = logging.getLogger('slick-reporter.Slick')
         self.slickcon = None
         self.is_connected = False
         self.project = None
+        self.environment = environment_name
         self.component = None
         self.componentref = None
         self.testplan = test_plan
@@ -51,6 +53,7 @@ class SlickQA(object):
         self.buildref = None
         self.testrun = test_run
         self.testrunref = None
+        self.testrun_group = test_run_group_name
         self.logqueue = []
 
         self.init_connection(url)
@@ -60,7 +63,9 @@ class SlickQA(object):
             self.init_release()
             self.init_build()
             self.init_testplan()
+            self.init_environment()
             self.init_testrun()
+            self.init_testrungroup()
             # TODO: if you have a list of test cases, add results for each with notrun status
 
     def init_connection(self, url):
@@ -186,6 +191,16 @@ class SlickQA(object):
         else:
             self.logger.warn("No testplan specified for the testrun.")
 
+    def init_environment(self):
+        if self.environment is not None:
+            env = self.slickcon.configurations.findOne(name=self.environment, configurationType="ENVIRONMENT")
+            if env is None:
+                env = Configuration()
+                env.name = self.environment
+                env.configurationType = "ENVIRONMENT"
+                env = self.slickcon.configurations(env).create()
+            self.environment = env
+
     def init_testrun(self):
         testrun = Testrun()
         if self.testrun is not None:
@@ -201,9 +216,22 @@ class SlickQA(object):
         testrun.build = self.buildref
         testrun.state = RunStatus.RUNNING
         testrun.runStarted = int(round(time.time() * 1000))
+        if self.environment is not None and isinstance(self.environment, Configuration):
+            testrun.config = self.environment.create_reference()
 
         self.logger.debug("Creating testrun with name {}.".format(testrun.name))
         self.testrun = self.slickcon.testruns(testrun).create()
+
+    def init_testrungroup(self):
+        if self.testrun_group is not None:
+            trg = self.slickcon.testrungroups.findOne(name=self.testrun_group)
+            if trg is None:
+                trg = TestrunGroup()
+                trg.name = self.testrun_group
+                trg.testruns = []
+                trg.created = datetime.now()
+                trg = self.slickcon.testrungroups(trg).create()
+            self.testrun_group = self.slickcon.testrungroups(trg).add_testrun(self.testrun)
 
     def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassname='', exceptionmessage='', stacktrace=''):
         entry = LogEntry()

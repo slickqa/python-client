@@ -334,6 +334,33 @@ class StoredFileApiPart(SlickApiPart):
         return self(storedfile).update()
 
 
+class TestrunGroupApiPart(SlickApiPart):
+
+    def __init__(self, parentPart):
+        super(TestrunGroupApiPart, self).__init__(TestrunGroup, parentPart)
+
+    def add_testrun(self, testrun):
+        id = testrun
+        if isinstance(testrun, Testrun):
+            id = testrun.id
+        url = self.getUrl()
+
+        # hopefully when we discover what problems exist in slick to require this, we can take the loop out
+        for retry in range(3):
+            try:
+                self.logger.debug("Making request to slick at url %s", url)
+                r = requests.post(url + "/addtestrun/" + id)
+                self.logger.debug("Request returned status code %d", r.status_code)
+                if r.status_code is 200:
+                    return self.model.from_dict(r.json())
+                else:
+                    self.logger.debug("Body of what slick returned: %s", r.text)
+            except BaseException as error:
+                self.logger.warn("Received exception while connecting to slick at %s", url, exc_info=sys.exc_info())
+        raise SlickCommunicationError(
+            "Tried 3 times to request data from slick at url %s without a successful status code.", url)
+
+
 class SlickCommunicationError(Exception):
     def __init__(self, *args, **kwargs):
         super(SlickCommunicationError, self).__init__(*args, **kwargs)
@@ -364,7 +391,7 @@ class SlickConnection(object):
         self.version = SlickApiPart(ProductVersion, self, name='version')
         self.testcases = SlickApiPart(Testcase, self)
         self.results = SlickApiPart(Result, self)
-        self.testrungroups = SlickApiPart(TestrunGroup, self)
+        self.testrungroups = TestrunGroupApiPart(self)
         self.hoststatus = SlickApiPart(HostStatus, self, name='hoststatus')
         self.updates = SlickApiPart(SlickUpdate, self, name='updates')
         self.updates.records = SlickApiPart(UpdateRecord, self.updates, name='records')

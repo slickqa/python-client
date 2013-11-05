@@ -4,7 +4,7 @@ from slickqa import SlickQA, ResultStatus, RunStatus
 import datetime
 import time
 
-slick = SlickQA('http://localhost:8080', 'EP', '10.7', '5', 'My Testplan')
+slick = SlickQA('http://localhost:8080', 'EP', '10.7', '5', 'My Testplan', environment_name='Example', test_run_group_name='example.py testruns')
 
 results = []
 results.append(slick.file_result("First Test", status=ResultStatus.NO_RESULT, runstatus=RunStatus.TO_BE_RUN))
