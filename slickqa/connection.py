@@ -294,7 +294,10 @@ def upload_chunks(url, stored_file, file_like_obj):
     md5 = hashlib.md5()
     bindata = file_like_obj.read(stored_file.chunkSize)
     while bindata:
-        md5.update(bindata)
+        if isinstance(bindata, bytes):
+            md5.update(bindata)
+        elif isinstance(bindata, str):
+            md5.update(bindata.encode('ascii', 'ignore'))
         requests.post(url, data=bindata, headers={'Content-Type': 'application/octet-stream'})
         bindata = file_like_obj.read(stored_file.chunkSize)
     stored_file.md5 = md5.hexdigest()
