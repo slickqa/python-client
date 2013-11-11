@@ -32,7 +32,8 @@ class Configuration(micromodels.Model):
         reference = ConfigurationReference()
         reference.configId = self.id
         reference.name = self.name
-        reference.filename = self.filename
+        if hasattr(self, 'filename'):
+            reference.filename = self.filename
         return reference
 
 
