@@ -207,9 +207,12 @@ class Testcase(micromodels.Model):
         reference = TestcaseReference()
         reference.testcaseId = self.id
         reference.name = self.name
-        reference.automationId = self.automationId
-        reference.automationKey = self.automationKey
-        reference.automationTool = self.automationTool
+        if hasattr(self, 'automationId'):
+            reference.automationId = self.automationId
+        if hasattr(self, 'automationKey'):
+            reference.automationKey = self.automationKey
+        if hasattr(self, 'automationTool'):
+            reference.automationTool = self.automationTool
         return reference
 
 
