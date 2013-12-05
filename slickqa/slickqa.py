@@ -164,6 +164,7 @@ class SlickQA(object):
         self.logger.info("Adding component {} to project {}.".format(component_name, self.project.name))
         component = Component()
         component.name = component_name
+	component.code = component_name.replace(" ", "-")
         self.component = self.slickcon.projects(self.project).components(component).create()
         self.project.components.append(self.component)
         self.componentref = self.component.create_reference()
@@ -254,7 +255,7 @@ class SlickQA(object):
         testrun.id = self.testrun.id
         testrun.runFinished = int(round(time.time() * 1000))
         testrun.state = RunStatus.FINISHED
-        self.logger.debug("Finishing testrun named {}.".format(testrun.name))
+        self.logger.debug("Finishing testrun named {}, with id {}.".format(testrun.name, testrun.id))
         self.slickcon.testruns(testrun).update()
     # TODO: need to add logs, files, etc. to a result
 
