@@ -115,7 +115,7 @@ class Component(micromodels.Model):
         ref = ComponentReference()
         ref.id = self.id
         ref.name = self.name
-        if hasattr(self.code) and self.code is not None:
+        if hasattr(self, 'code') and self.code is not None:
             ref.code = self.code
         return ref
 
