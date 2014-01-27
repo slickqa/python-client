@@ -208,10 +208,11 @@ class SlickQA(object):
             testrun.name = self.testrun
         else:
             if self.testplan is not None:
-                testrun.name = 'Testrun for testplan {}'.format(self.testplan.name)
-                testrun.testplanId = self.testplan.id
+                testrun.name = self.testplan.name
             else:
                 testrun.name = 'Tests run from slick-python'
+        if self.testplan is not None:
+            testrun.testplanId = self.testplan.id
         testrun.project = self.project.create_reference()
         testrun.release = self.releaseref
         testrun.build = self.buildref
