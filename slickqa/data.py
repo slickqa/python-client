@@ -286,12 +286,16 @@ class Testrun(micromodels.Model):
         ref.name = self.name
         return ref
 
+class GroupType:
+    PARALLEL = "PARALLEL"
+    SERIAL = "SERIAL"
 
 class TestrunGroup(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
     created = micromodels.DateTimeField(use_int=True)
     testruns = micromodels.ModelCollectionField(Testrun)
+    groupType = micromodels.StringField()
     groupSummary = micromodels.ModelField(TestrunSummary)
 
 
@@ -473,6 +477,31 @@ class EmailSubscription(SystemConfiguration):
         super(EmailSubscription, self).__init__()
         self.className = 'org.tcrun.slickij.api.data.EmailSubscription'
         self.configurationType = 'email-subscription'
+
+class ComparisonTypes:
+    EQUALS_IGNORE_CASE = "equals-ignore-case"
+    EQUALS = "equals"
+    CONTAINS = "contains"
+
+
+class MatchCriteria(micromodels.Model):
+    """Match criteria for AutomaticTestrunGroup System Configuration.  This describes a single match against a testrun."""
+    propertyName = micromodels.StringField()
+    propertyValue = micromodels.StringField()
+    comparisonType = micromodels.StringField()
+
+class AutomaticTestrunGroup(SystemConfiguration):
+    enabled = micromodels.BooleanField()
+    template = micromodels.StringField()
+    groupType = micromodels.StringField()
+    replaceSameBuild = micromodels.BooleanField()
+    matchers = micromodels.ModelCollectionField(MatchCriteria)
+
+    def __init__(self):
+        super(AutomaticTestrunGroup, self).__init__()
+        self.configurationType = 'auto-add-to-testrungroup'
+        self.replaceSameBuild = True
+
 
 
 
