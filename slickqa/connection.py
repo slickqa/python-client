@@ -168,6 +168,8 @@ class SlickApiPart(object):
         url = self.getUrl()
 
         # hopefully when we discover what problems exist in slick to require this, we can take the loop out
+        last_stats_code = None
+        last_body = None
         for retry in range(3):
             try:
                 json_data = obj.to_json()
@@ -177,12 +179,15 @@ class SlickApiPart(object):
                 if r.status_code is 200:
                     return self.model.from_dict(r.json())
                 else:
-                    self.logger.debug("Body of what slick returned: %s", r.text)
+                    last_stats_code = r.status_code
+                    last_body = r.text
+                    self.logger.warn("Slick status code: %d", r.status_code)
+                    self.logger.warn("Body of what slick returned: %s", r.text)
             except BaseException as error:
                 self.logger.warn("Received exception while connecting to slick at %s", url, exc_info=sys.exc_info())
                 traceback.print_exc()
         raise SlickCommunicationError(
-            "Tried 3 times to request data from slick at url %s without a successful status code.", url)
+            "Tried 3 times to request data from slick at url %s without a successful status code.  Last status code: %d, body: %s", url, last_stats_code, last_body)
 
     put = update
 
