@@ -283,7 +283,7 @@ class ModelCollectionField(WrappedObjectField):
         return object_list
 
     def to_serial(self, model_instances):
-        return [instance.to_dict(serial=True) for instance in model_instances]
+        return [instance.to_dict(serial=True) if instance is not None else None for instance in model_instances]
 
 
 class FieldCollectionField(BaseField):
