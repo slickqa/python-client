@@ -24,6 +24,9 @@ def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassnam
 def update_result(self):
     self.connection.results(self).update()
 
+def update_testrun(self):
+    self.connection.testrun(self).update()
+
 def add_file_to_result(self, filename, fileobj=None):
     slickfile = self.connection.files.upload_local_file(filename, fileobj)
     if not hasattr(self, 'files'):
@@ -36,6 +39,11 @@ def make_result_updatable(result, connection):
     result.update = types.MethodType(update_result, result)
     result.add_file = types.MethodType(add_file_to_result, result)
     result.add_log_entry = types.MethodType(add_log_entry, result)
+
+def make_testrun_updatable(testrun, connection):
+    testrun.connection = connection
+    testrun.update = types.MethodType(update_testrun, testrun)
+    testrun.add_file = types.MethodType(add_file_to_result, testrun)
 
 class SlickQA(object):
     def __init__(self, url, project_name, release_name, build_name, test_plan=None, test_run=None, environment_name=None, test_run_group_name=None):
@@ -223,6 +231,7 @@ class SlickQA(object):
 
         self.logger.debug("Creating testrun with name {}.".format(testrun.name))
         self.testrun = self.slickcon.testruns(testrun).create()
+        make_testrun_updatable(self.testrun)
 
     def init_testrungroup(self):
         if self.testrun_group is not None:
