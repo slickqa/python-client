@@ -25,7 +25,7 @@ def update_result(self):
     self.connection.results(self).update()
 
 def update_testrun(self):
-    self.connection.testrun(self).update()
+    self.connection.testruns(self).update()
 
 def add_file_to_result(self, filename, fileobj=None):
     slickfile = self.connection.files.upload_local_file(filename, fileobj)
