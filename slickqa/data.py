@@ -259,6 +259,16 @@ class SlickUpdate(micromodels.Model):
     needsApplying = micromodels.BooleanField()
 
 
+class StoredFile(micromodels.Model):
+    id = micromodels.StringField()
+    filename = micromodels.StringField()
+    chunkSize = micromodels.IntegerField()
+    uploadDate = micromodels.DateTimeField(use_int=True)
+    mimetype = micromodels.StringField()
+    md5 = micromodels.StringField()
+    length = micromodels.IntegerField()
+
+
 class TestrunReference(micromodels.Model):
     testrunId = micromodels.StringField()
     name = micromodels.StringField()
@@ -321,16 +331,6 @@ class RunStatus:
     TO_BE_RUN = "TO_BE_RUN"
     RUNNING = "RUNNING"
     FINISHED = "FINISHED"
-
-
-class StoredFile(micromodels.Model):
-    id = micromodels.StringField()
-    filename = micromodels.StringField()
-    chunkSize = micromodels.IntegerField()
-    uploadDate = micromodels.DateTimeField(use_int=True)
-    mimetype = micromodels.StringField()
-    md5 = micromodels.StringField()
-    length = micromodels.IntegerField()
 
 
 class LogEntry(micromodels.Model):
