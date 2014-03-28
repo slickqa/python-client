@@ -231,7 +231,7 @@ class SlickQA(object):
 
         self.logger.debug("Creating testrun with name {}.".format(testrun.name))
         self.testrun = self.slickcon.testruns(testrun).create()
-        make_testrun_updatable(self.testrun)
+        make_testrun_updatable(self.testrun, self.slickcon)
 
     def init_testrungroup(self):
         if self.testrun_group is not None:
