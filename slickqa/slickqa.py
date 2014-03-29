@@ -25,7 +25,8 @@ def update_result(self):
     self.connection.results(self).update()
 
 def update_testrun(self):
-    del self.summary
+    if hasattr(self, 'summary'):
+        del self.summary
     self.connection.testruns(self).update()
 
 def add_file_to_result(self, filename, fileobj=None):
