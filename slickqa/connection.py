@@ -35,7 +35,8 @@ import os
 import mimetypes
 import hashlib
 
-
+if not mimetypes.inited:
+    mimetypes.init()
 mimetypes.add_type('text/plain', 'log')
 
 json_content = {'Content-Type': 'application/json'}
