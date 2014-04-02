@@ -36,6 +36,8 @@ import mimetypes
 import hashlib
 
 
+mimetypes.add_type('text/plain', 'log')
+
 json_content = {'Content-Type': 'application/json'}
 STREAM_CONTENT = {'Content-Type': 'application/octet-stream'}
 
@@ -323,7 +325,7 @@ class StoredFileApiPart(SlickApiPart):
         if file_obj is None and not os.path.exists(local_file_path):
             return
         storedfile = StoredFile()
-        storedfile.mimetype = mimetypes.guess_type(local_file_path)
+        storedfile.mimetype = mimetypes.guess_type(local_file_path)[0]
         storedfile.filename = os.path.basename(local_file_path)
         if file_obj is None:
             storedfile.length = os.stat(local_file_path).st_size
