@@ -37,7 +37,7 @@ import hashlib
 
 if not mimetypes.inited:
     mimetypes.init()
-mimetypes.add_type('text/plain', 'log')
+mimetypes.add_type('text/plain', '.log')
 
 json_content = {'Content-Type': 'application/json'}
 STREAM_CONTENT = {'Content-Type': 'application/octet-stream'}
