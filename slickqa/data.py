@@ -37,6 +37,16 @@ class Configuration(micromodels.Model):
         return reference
 
 
+class StoredFile(micromodels.Model):
+    id = micromodels.StringField()
+    filename = micromodels.StringField()
+    chunkSize = micromodels.IntegerField()
+    uploadDate = micromodels.DateTimeField(use_int=True)
+    mimetype = micromodels.StringField()
+    md5 = micromodels.StringField()
+    length = micromodels.IntegerField()
+
+
 class ConfigurationReference(micromodels.Model):
     configId = micromodels.StringField()
     name = micromodels.StringField()
@@ -271,16 +281,6 @@ class SlickUpdate(micromodels.Model):
     description = micromodels.StringField()
     name = micromodels.StringField()
     needsApplying = micromodels.BooleanField()
-
-
-class StoredFile(micromodels.Model):
-    id = micromodels.StringField()
-    filename = micromodels.StringField()
-    chunkSize = micromodels.IntegerField()
-    uploadDate = micromodels.DateTimeField(use_int=True)
-    mimetype = micromodels.StringField()
-    md5 = micromodels.StringField()
-    length = micromodels.IntegerField()
 
 
 class TestrunReference(micromodels.Model):
