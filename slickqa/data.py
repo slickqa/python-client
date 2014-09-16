@@ -43,12 +43,6 @@ class ConfigurationReference(micromodels.Model):
     filename = micromodels.StringField()
 
 
-class ConfigurationOverride(micromodels.Model):
-    key = micromodels.StringField()
-    value = micromodels.StringField()
-    isRequirement = micromodels.BooleanField()
-
-
 class ReloadStatus(micromodels.Model):
     systemName = micromodels.StringField()
     reloadTime = micromodels.DateTimeField(use_int=True)
@@ -99,6 +93,25 @@ class ReleaseReference(micromodels.Model):
     name = micromodels.StringField()
 
 
+class FeatureReference(micromodels.Model):
+    id = micromodels.StringField()
+    name = micromodels.StringField()
+
+
+class Feature(micromodels.Model):
+    id = micromodels.StringField()
+    name = micromodels.StringField()
+    description = micromodels.StringField()
+    imgUrl = micromodels.StringField()
+    img = micromodels.ModelField(StoredFile)
+
+    def create_reference(self):
+        ref = FeatureReference()
+        ref.id = self.id
+        ref.name = self.name
+        return ref
+
+
 class ComponentReference(micromodels.Model):
     id = micromodels.StringField()
     name = micromodels.StringField()
@@ -110,6 +123,7 @@ class Component(micromodels.Model):
     name = micromodels.StringField()
     description = micromodels.StringField()
     code = micromodels.StringField()
+    features = micromodels.ModelCollectionField(Feature)
 
     def create_reference(self):
         ref = ComponentReference()
@@ -298,9 +312,14 @@ class Testrun(micromodels.Model):
         ref.name = self.name
         return ref
 
+
 class GroupType:
     PARALLEL = "PARALLEL"
     SERIAL = "SERIAL"
+
+    def __init__(self):
+        pass
+
 
 class TestrunGroup(micromodels.Model):
     id = micromodels.StringField()
@@ -326,11 +345,17 @@ class ResultStatus:
     SKIPPED = "SKIPPED"
     CANCELLED = "CANCELLED"
 
+    def __init__(self):
+        pass
+
 
 class RunStatus:
     TO_BE_RUN = "TO_BE_RUN"
     RUNNING = "RUNNING"
     FINISHED = "FINISHED"
+
+    def __init__(self):
+        pass
 
 
 class LogEntry(micromodels.Model):
@@ -428,6 +453,7 @@ class EmailTemplateConfiguration(SystemConfiguration):
     emailTemplate = micromodels.StringField()
 
     def __init__(self):
+        super(EmailTemplateConfiguration, self).__init__()
         self.className = 'org.tcrun.slickij.api.data.EmailTemplateConfiguration'
         self.configurationType = 'email-template-configuration'
 
@@ -480,17 +506,23 @@ class EmailSubscription(SystemConfiguration):
         self.className = 'org.tcrun.slickij.api.data.EmailSubscription'
         self.configurationType = 'email-subscription'
 
+
 class ComparisonTypes:
     EQUALS_IGNORE_CASE = "equals-ignore-case"
     EQUALS = "equals"
     CONTAINS = "contains"
 
+    def __init__(self):
+        pass
+
 
 class MatchCriteria(micromodels.Model):
-    """Match criteria for AutomaticTestrunGroup System Configuration.  This describes a single match against a testrun."""
+    """Match criteria for AutomaticTestrunGroup System Configuration.
+    This describes a single match against a testrun."""
     propertyName = micromodels.StringField()
     propertyValue = micromodels.StringField()
     comparisonType = micromodels.StringField()
+
 
 class AutomaticTestrunGroup(SystemConfiguration):
     enabled = micromodels.BooleanField()
@@ -503,7 +535,3 @@ class AutomaticTestrunGroup(SystemConfiguration):
         super(AutomaticTestrunGroup, self).__init__()
         self.configurationType = 'auto-add-to-testrungroup'
         self.replaceSameBuild = True
-
-
-
-
