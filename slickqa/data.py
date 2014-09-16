@@ -251,6 +251,12 @@ class Testplan(micromodels.Model):
     queries = micromodels.ModelCollectionField(NamedTestCaseQuery)
 
 
+class ConfigurationOverride(micromodels.Model):
+    key = micromodels.StringField()
+    value = micromodels.StringField()
+    isRequirement = micromodels.BooleanField()
+
+
 class TestplanRunParameters(micromodels.Model):
     config = micromodels.ModelField(ConfigurationReference)
     runtimeOptions = micromodels.ModelField(ConfigurationReference)
@@ -372,12 +378,6 @@ class UpdateRecord(micromodels.Model):
     id = micromodels.StringField()
     updateId = micromodels.StringField()
     logs = micromodels.ModelCollectionField(LogEntry)
-
-
-class ConfigurationOverride(micromodels.Model):
-    key = micromodels.StringField()
-    value = micromodels.StringField()
-    isRequirement = micromodels.BooleanField()
 
 
 class ResultReference(micromodels.Model):
