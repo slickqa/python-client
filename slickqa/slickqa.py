@@ -152,6 +152,7 @@ class SlickQA(object):
             self.logger.info("Adding build {} to release {}.".format(build_number, self.release.name))
             build = Build()
             build.name = build_number
+            build.built = datetime.now()
             self.buildref = (
                 self.slickcon.projects(self.project).releases(self.release).builds(build).create()).create_reference()
             assert isinstance(self.buildref, BuildReference)
