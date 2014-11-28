@@ -19,3 +19,4 @@ nb-configuration.xml
 /*.egg-info/*
 /_build/*
 /build/*
+vpy
