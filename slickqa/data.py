@@ -90,6 +90,7 @@ class Release(micromodels.Model):
     target = micromodels.DateTimeField(use_int=True)
     defaultBuild = micromodels.StringField()
     builds = micromodels.ModelCollectionField(Build)
+    status = micromodels.StringField()
 
     def create_reference(self):
         ref = ReleaseReference()
