@@ -61,7 +61,7 @@ class StringField(BaseField):
         """
         if self.data is None:
             return ''
-        return str(self.data)
+        return self.data
 
 
 class IntegerField(BaseField):
