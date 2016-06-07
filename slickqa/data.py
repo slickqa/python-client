@@ -357,6 +357,7 @@ class ResultStatus:
 
 
 class RunStatus:
+    SCHEDULED = "SCHEDULED"
     TO_BE_RUN = "TO_BE_RUN"
     RUNNING = "RUNNING"
     FINISHED = "FINISHED"

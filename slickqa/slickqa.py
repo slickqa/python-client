@@ -272,7 +272,7 @@ class SlickQA(object):
         self.slickcon.testruns(testrun).update()
     # TODO: need to add logs, files, etc. to a result
 
-    def file_result(self, name, status=ResultStatus.FAIL, reason=None, runlength=0, testdata=None, runstatus=RunStatus.FINISHED):
+    def file_result(self, name, status=ResultStatus.FAIL, reason=None, runlength=0, testdata=None, runstatus=RunStatus.FINISHED, attributes=None):
         test = None
         if testdata is not None:
             assert isinstance(testdata, Testcase)
@@ -318,6 +318,8 @@ class SlickQA(object):
         result.started = result.end - result.runlength
         result.status = status
         result.runstatus = runstatus
+        if attributes is not None:
+            result.attributes = attributes
         self.logger.debug("Filing result of '{}' for test with name '{}'".format(result.status, result.testcase.name))
         result = self.slickcon.results(result).create()
         self.logger.info("Filed result of '{}' for test '{}', result id: {}".format(result.status, result.testcase.name,
