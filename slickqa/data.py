@@ -274,6 +274,7 @@ class ResultsByStatus(micromodels.Model):
     SKIPPED = micromodels.IntegerField()
     NO_RESULT = micromodels.IntegerField()
     CANCELLED = micromodels.IntegerField()
+    PASSED_ON_RETRY = micromodels.IntegerField()
 
 
 class TestrunSummary(micromodels.Model):
@@ -351,6 +352,7 @@ class ResultStatus:
     BROKEN_TEST = "BROKEN_TEST"
     SKIPPED = "SKIPPED"
     CANCELLED = "CANCELLED"
+    PASSED_ON_RETRY = "PASSED_ON_RETRY"
 
     def __init__(self):
         pass
