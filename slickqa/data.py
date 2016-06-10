@@ -313,6 +313,7 @@ class Testrun(micromodels.Model):
     files = micromodels.ModelCollectionField(StoredFile)
     info = micromodels.StringField()
     state = micromodels.StringField()
+    attributes = micromodels.BaseField()
 
     def create_reference(self):
         ref = TestrunReference()
