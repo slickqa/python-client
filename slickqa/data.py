@@ -414,6 +414,7 @@ class Result(micromodels.Model):
     runlength = micromodels.IntegerField()
     history = micromodels.ModelCollectionField(ResultReference)
     hostname = micromodels.StringField()
+    requirements = micromodels.FieldCollectionField(micromodels.StringField())
 
 
 class HostStatus(micromodels.Model):
