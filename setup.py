@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 
+from setuptools import setup, find_packages
+
 __author__ = 'Jason Corbett'
 
-from setuptools import setup, find_packages
+
+def get_requirements(filename):
+    with open(filename) as f:
+        return f.readlines()
 
 setup(
     name="slickqa",
@@ -13,7 +18,7 @@ setup(
     packages=find_packages(),
     package_data={'': ['*.txt', '*.rst', '*.html']},
     include_package_data=True,
-    install_requires=['requests>=1.1.0', ],
+    install_requires=get_requirements('requirements.txt'),
     author="Slick Developers",
     url="http://github.com/slickqa/python-client"
 )
