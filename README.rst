@@ -3,7 +3,7 @@
 =============================
 
 This library is a python client for accessing and reporting results to Slick.  Slick is an
-open source QA result and test manager available from http://code.google.com/p/slickqa.
+open source QA result and test manager available from https://github.com/slickqa/slickqaweb.
 
 Use is intended to be simple, and explorable.  All the types are defined, and code completion
 will be available through most IDEs.  Here is an example of how the library is used::
