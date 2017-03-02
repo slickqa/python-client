@@ -1,14 +1,20 @@
 import logging
+import re
+import sys
 import time
 from datetime import datetime
 import types
 
+import docutils.core
+
 from .micromodels.fields import ModelCollectionField
 from . import SlickConnection, SlickCommunicationError, Release, Build, BuildReference, Component, ComponentReference, \
-    Project, Testplan, Testrun, Testcase, RunStatus, Result, ResultStatus, LogEntry, Configuration, TestrunGroup, TestrunReference
+    Project, Testplan, Testrun, Testcase, RunStatus, Result, ResultStatus, LogEntry, Configuration, TestrunGroup, \
+    TestrunReference
 
 
-def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassname='', exceptionmessage='', stacktrace=''):
+def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassname='', exceptionmessage='',
+                  stacktrace=''):
     entry = LogEntry()
     entry.entryTime = int(round(time.time() * 1000))
     entry.message = message
@@ -21,13 +27,16 @@ def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassnam
         self.log = []
     self.log.append(entry)
 
+
 def update_result(self):
     self.connection.results(self).update()
+
 
 def update_testrun(self):
     if hasattr(self, 'summary'):
         del self.summary
     self.connection.testruns(self).update()
+
 
 def add_file_to_result(self, filename, fileobj=None):
     slickfile = self.connection.files.upload_local_file(filename, fileobj)
@@ -36,19 +45,23 @@ def add_file_to_result(self, filename, fileobj=None):
     self.files.append(slickfile)
     self.update()
 
+
 def make_result_updatable(result, connection):
     result.connection = connection
     result.update = types.MethodType(update_result, result)
     result.add_file = types.MethodType(add_file_to_result, result)
     result.add_log_entry = types.MethodType(add_log_entry, result)
 
+
 def make_testrun_updatable(testrun, connection):
     testrun.connection = connection
     testrun.update = types.MethodType(update_testrun, testrun)
     testrun.add_file = types.MethodType(add_file_to_result, testrun)
 
+
 class SlickQA(object):
-    def __init__(self, url, project_name, release_name, build_name, test_plan=None, test_run=None, environment_name=None, test_run_group_name=None):
+    def __init__(self, url, project_name, release_name, build_name, test_plan=None, test_run=None,
+                 environment_name=None, test_run_group_name=None):
         self.logger = logging.getLogger('slick-reporter.Slick')
         self.slickcon = None
         self.is_connected = False
@@ -111,7 +124,7 @@ class SlickQA(object):
             self.project.name = project
             self.project = self.slickcon.projects(self.project).create()
 
-        assert (isinstance(self.project, Project))
+        assert isinstance(self.project, Project)
         self.logger.info("Using project with name '{}' and id: {}.".format(self.project.name, self.project.id))
 
     def init_release(self):
@@ -123,7 +136,7 @@ class SlickQA(object):
             assert isinstance(release, Release)
             if release.name == release_name:
                 self.logger.info("Found Release '{}' with id '{}' in Project '{}'.".format(release.name, release.id,
-                                 self.project.id))
+                                                                                           self.project.id))
                 self.release = release
                 self.releaseref = release.create_reference()
                 break
@@ -136,7 +149,8 @@ class SlickQA(object):
             self.project = self.slickcon.projects(self.project).get()
             self.releaseref = self.release.create_reference()
             self.logger.info("Using newly created release '{}' with id '{}' in Project '{}'.".format(self.release.name,
-                             self.release.id, self.project.name))
+                                                                                                     self.release.id,
+                                                                                                     self.project.name))
 
     def init_build(self):
         build_number = self.build
@@ -145,7 +159,7 @@ class SlickQA(object):
         for build in self.release.builds:
             if build.name == build_number:
                 self.logger.debug("Found build with name '{}' and id '{}' on release '{}'".format(build.name, build.id,
-                                  self.release.name))
+                                                                                                  self.release.name))
                 self.buildref = build.create_reference()
                 break
         else:
@@ -157,15 +171,17 @@ class SlickQA(object):
                 self.slickcon.projects(self.project).releases(self.release).builds(build).create()).create_reference()
             assert isinstance(self.buildref, BuildReference)
             self.logger.info("Using newly created build '{}' with id '{}' in Release '{}' in Project '{}'.".format(
-                             self.buildref.name, self.buildref.buildId, self.release.name, self.project.name))
+                self.buildref.name, self.buildref.buildId, self.release.name, self.project.name))
 
     def get_component(self, component_name):
-        self.logger.debug("Looking for component with name '{}' in project '{}'".format(component_name, self.project.name))
+        self.logger.debug(
+            "Looking for component with name '{}' in project '{}'".format(component_name, self.project.name))
         for comp in self.project.components:
             if comp.name == component_name:
                 assert isinstance(comp, Component)
-                self.logger.info("Found component with name '{}' and id '{}' in project '{}'.".format(comp.name, comp.id,
-                                 self.project.name))
+                self.logger.info(
+                    "Found component with name '{}' and id '{}' in project '{}'.".format(comp.name, comp.id,
+                                                                                         self.project.name))
                 self.component = comp
                 self.componentref = self.component.create_reference()
                 assert isinstance(self.componentref, ComponentReference)
@@ -180,7 +196,7 @@ class SlickQA(object):
         self.project.components.append(self.component)
         self.componentref = self.component.create_reference()
         self.logger.info("Using newly created component '{}' with id '{}' in project '{}'.".format(
-                         self.component.name, self.component.id, self.project.name))
+            self.component.name, self.component.id, self.project.name))
         return self.component
 
     def init_testplan(self):
@@ -189,7 +205,7 @@ class SlickQA(object):
             testplan = self.slickcon.testplans.findOne(projectid=self.project.id, name=testplan_name)
             if testplan is None:
                 self.logger.debug("Creating testplan with name '{}' connected to project '{}'.".format(testplan_name,
-                                  self.project.name))
+                                                                                                       self.project.name))
                 testplan = Testplan()
                 testplan.name = testplan_name
                 testplan.project = self.project.create_reference()
@@ -198,7 +214,8 @@ class SlickQA(object):
                 testplan = self.slickcon.testplans(testplan).create()
                 self.logger.info("Using newly create testplan '{}' with id '{}'.".format(testplan.name, testplan.id))
             else:
-                self.logger.info("Found (and using) existing testplan '{}' with id '{}'.".format(testplan.name, testplan.id))
+                self.logger.info(
+                    "Found (and using) existing testplan '{}' with id '{}'.".format(testplan.name, testplan.id))
             self.testplan = testplan
         else:
             self.logger.warn("No testplan specified for the testrun.")
@@ -247,7 +264,8 @@ class SlickQA(object):
                 trg = self.slickcon.testrungroups(trg).create()
             self.testrun_group = self.slickcon.testrungroups(trg).add_testrun(self.testrun)
 
-    def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassname='', exceptionmessage='', stacktrace=''):
+    def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassname='', exceptionmessage='',
+                      stacktrace=''):
         entry = LogEntry()
         entry.entryTime = int(round(time.time() * 1000))
         entry.message = message
@@ -270,9 +288,11 @@ class SlickQA(object):
         testrun.state = RunStatus.FINISHED
         self.logger.debug("Finishing testrun named {}, with id {}.".format(testrun.name, testrun.id))
         self.slickcon.testruns(testrun).update()
+
     # TODO: need to add logs, files, etc. to a result
 
-    def file_result(self, name, status=ResultStatus.FAIL, reason=None, runlength=0, testdata=None, runstatus=RunStatus.FINISHED, attributes=None, requires=None):
+    def file_result(self, name, status=ResultStatus.FAIL, reason=None, runlength=0, testdata=None,
+                    runstatus=RunStatus.FINISHED, attributes=None, requires=None):
         test = None
         if testdata is not None:
             assert isinstance(testdata, Testcase)
@@ -290,7 +310,8 @@ class SlickQA(object):
             test.name = name
             test.project = self.project.create_reference()
             test = self.slickcon.testcases(test).create()
-            self.logger.info("Using newly created testcase with name '{}' and id '{}' for result.".format(name, test.id))
+            self.logger.info(
+                "Using newly created testcase with name '{}' and id '{}' for result.".format(name, test.id))
         else:
             if testdata is not None:
                 # update the test with the data passed in
@@ -325,6 +346,64 @@ class SlickQA(object):
         self.logger.debug("Filing result of '{}' for test with name '{}'".format(result.status, result.testcase.name))
         result = self.slickcon.results(result).create()
         self.logger.info("Filed result of '{}' for test '{}', result id: {}".format(result.status, result.testcase.name,
-                         result.id))
+                                                                                    result.id))
         make_result_updatable(result, self.slickcon)
         return result
+
+
+class DocStringMetaData(object):
+    def __init__(self, func):
+        if hasattr(func, '__doc__') and func.__doc__ is not None:
+            dom = docutils.core.publish_doctree(func.__doc__).asdom()
+            if dom is not None and dom.firstChild is not None and dom.firstChild.nodeName == 'document':
+                document = dom.firstChild
+                if document.hasChildNodes() and document.firstChild.nodeName == 'paragraph':
+                    self.name = document.firstChild.firstChild.nodeValue
+                    if len(document.childNodes) > 1:
+                        for node in document.childNodes[1:]:
+                            self.process_node(node)
+                else:
+                    self.name = self.get_name_from_function_name(func)
+                    for node in document.childNodes:
+                        self.process_node(node)
+        else:
+            self.name = self.get_name_from_function_name(func)
+
+    def get_name_from_function_name(self, func):
+        if hasattr(func, '__name__') and func.__name__ is not None and func.__name__ != "":
+            s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', func.__name__)
+            s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+            return re.sub(r'_', ' ', re.sub(r'_?[tT]est$', '', re.sub(r'^[Tt]est_?', '', s2))).capitalize()
+
+    def process_node(self, node):
+        if node.nodeName == 'block_quote':
+            for child_node in node.childNodes:
+                self.process_node(child_node)
+        if node.nodeName == 'field_list':
+            for child_node in node.childNodes:
+                self.process_node(child_node)
+        if node.nodeName == 'paragraph':
+            if hasattr(self, 'purpose'):
+                self.purpose = self.purpose + '\n\n' + node.firstChild.nodeValue
+            else:
+                self.purpose = node.firstChild.nodeValue
+        if node.nodeName == 'field':
+            if node.firstChild.firstChild.nodeValue == 'expectedResults' and \
+                    node.childNodes[1].firstChild.nodeName == 'enumerated_list':
+                self.expectedResults = []
+                for list_item in node.childNodes[1].firstChild.childNodes:
+                    self.expectedResults.append(list_item.firstChild.firstChild.nodeValue)
+            elif node.firstChild.firstChild.nodeValue == 'steps' and \
+                    node.childNodes[1].firstChild.nodeName == 'enumerated_list':
+                self.steps = []
+                for list_item in node.childNodes[1].firstChild.childNodes:
+                    self.steps.append(list_item.firstChild.firstChild.nodeValue)
+            elif node.firstChild.firstChild.nodeValue == 'tags':
+                setattr(self, node.firstChild.firstChild.nodeValue,
+                        node.childNodes[1].firstChild.firstChild.nodeValue.split(", "))
+            else:
+                try:
+                    setattr(self, node.firstChild.firstChild.nodeValue,
+                            node.childNodes[1].firstChild.firstChild.nodeValue)
+                except:
+                    sys.stderr.write("Problem parsing comment for test: {}".format(self.name))
