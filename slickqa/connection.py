@@ -21,6 +21,7 @@ import requests
 import logging
 import sys
 import traceback
+import pprint
 
 try:
     from urllib.parse import urlencode, quote
@@ -113,7 +114,9 @@ class SlickApiPart(object):
                         retval.append(self.model.from_dict(dct))
                     return retval
                 else:
-                    self.logger.debug("Body of what slick returned: %s", r.text)
+                    self.logger.error("Slick returned an error when trying to access %s: status code %s" % (url, str(r.status_code)))
+                    self.logger.error("Slick response: ", pprint.pformat(r))
+                    
             except BaseException as error:
                 self.logger.warn("Received exception while connecting to slick at %s", url, exc_info=sys.exc_info())
         raise SlickCommunicationError(
