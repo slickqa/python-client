@@ -17,7 +17,7 @@ def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassnam
                   stacktrace=''):
     entry = LogEntry()
     entry.entryTime = int(round(time.time() * 1000))
-    entry.message = message
+    entry.message = str(message)
     entry.level = level
     entry.loggerName = loggername
     entry.exceptionClassName = exceptionclassname
