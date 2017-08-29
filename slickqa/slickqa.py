@@ -10,7 +10,7 @@ import docutils.core
 from .micromodels.fields import ModelCollectionField
 from . import SlickConnection, SlickCommunicationError, Release, Build, BuildReference, Component, ComponentReference, \
     Project, Testplan, Testrun, Testcase, RunStatus, Result, ResultStatus, LogEntry, Configuration, TestrunGroup, \
-    TestrunReference
+    TestrunReference, Link
 
 
 def add_log_entry(self, message, level='DEBUG', loggername='', exceptionclassname='', exceptionmessage='',
@@ -46,10 +46,21 @@ def add_file_to_result(self, filename, fileobj=None):
     self.update()
 
 
+def add_link_to_result(self, name, url):
+    link = Link()
+    link.name = name
+    link.url = url
+    if not hasattr(self, 'links'):
+        self.links = []
+    self.links.append(link)
+    self.update()
+
+
 def make_result_updatable(result, connection):
     result.connection = connection
     result.update = types.MethodType(update_result, result)
     result.add_file = types.MethodType(add_file_to_result, result)
+    result.add_link = types.MethodType(add_link_to_result, result)
     result.add_log_entry = types.MethodType(add_log_entry, result)
 
 
@@ -57,6 +68,7 @@ def make_testrun_updatable(testrun, connection):
     testrun.connection = connection
     testrun.update = types.MethodType(update_testrun, testrun)
     testrun.add_file = types.MethodType(add_file_to_result, testrun)
+    testrun.add_link = types.MethodType(add_link_to_result, testrun)
 
 
 class SlickQA(object):
