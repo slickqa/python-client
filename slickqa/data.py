@@ -37,6 +37,11 @@ class Configuration(micromodels.Model):
         return reference
 
 
+class Link(micromodels.Model):
+    name = micromodels.StringField()
+    url = micromodels.StringField()
+
+
 class StoredFile(micromodels.Model):
     id = micromodels.StringField()
     filename = micromodels.StringField()
@@ -311,6 +316,7 @@ class Testrun(micromodels.Model):
     build = micromodels.ModelField(BuildReference)
     summary = micromodels.ModelField(TestrunSummary)
     files = micromodels.ModelCollectionField(StoredFile)
+    links = micromodels.ModelCollectionField(Link)
     info = micromodels.StringField()
     state = micromodels.StringField()
     attributes = micromodels.BaseField()
@@ -406,6 +412,7 @@ class Result(micromodels.Model):
     reason = micromodels.StringField()
     attributes = micromodels.BaseField()
     files = micromodels.ModelCollectionField(StoredFile)
+    links = micromodels.ModelCollectionField(Link)
     log = micromodels.ModelCollectionField(LogEntry)
     project = micromodels.ModelField(ProjectReference)
     component = micromodels.ModelField(ComponentReference)
