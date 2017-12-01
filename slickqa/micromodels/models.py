@@ -96,7 +96,7 @@ class Model(Micromodelsmc):
             data = json.loads(data)
         for name, field in self._clsfields.items():
             key = field.source or name
-            if key in data:
+            if isinstance(data, dict) and key in data:
                 # modified by Jason Corbett Oct 16, 2013 if statement added
                 # reason: if it's a sub object (embedded object) and the value is None we shouldn't set it
                 # needed by slick specifically.  The best thing to do would be:
