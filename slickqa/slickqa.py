@@ -401,12 +401,12 @@ class DocStringMetaData(object):
                 self.purpose = node.firstChild.nodeValue
         if node.nodeName == 'field':
             if node.firstChild.firstChild.nodeValue == 'expectedResults' and \
-                    node.childNodes[1].firstChild.nodeName == 'enumerated_list':
+                    hasattr(node.childNodes[1].firstChild, 'nodeName') and node.childNodes[1].firstChild.nodeName == 'enumerated_list':
                 self.expectedResults = []
                 for list_item in node.childNodes[1].firstChild.childNodes:
                     self.expectedResults.append(list_item.firstChild.firstChild.nodeValue)
             elif node.firstChild.firstChild.nodeValue == 'steps' and \
-                    node.childNodes[1].firstChild.nodeName == 'enumerated_list':
+                    hasattr(node.childNodes[1].firstChild, 'nodeName') and node.childNodes[1].firstChild.nodeName == 'enumerated_list':
                 self.steps = []
                 for list_item in node.childNodes[1].firstChild.childNodes:
                     self.steps.append(list_item.firstChild.firstChild.nodeValue)
