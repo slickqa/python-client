@@ -409,8 +409,8 @@ class GraphValueReference(micromodels.Model):
 
 
 class Graph(micromodels.Model):
-    columns = micromodels.FieldCollectionField(GraphColumnReference)
-    values = micromodels.FieldCollectionField(GraphValueReference)
+    columns = micromodels.ModelCollectionField(GraphColumnReference)
+    values = micromodels.ModelCollectionField(GraphValueReference)
 
 
 class Result(micromodels.Model):
