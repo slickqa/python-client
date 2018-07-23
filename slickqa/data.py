@@ -398,11 +398,6 @@ class ResultReference(micromodels.Model):
     build = micromodels.ModelField(BuildReference)
 
 
-class Graph(micromodels.Model):
-    columns = micromodels.FieldCollectionField(GraphColumnReference)
-    values = micromodels.FieldCollectionField(GraphValueReference)
-
-
 class GraphColumnReference(micromodels.Model):
     type = micromodels.StringField()
     name = micromodels.StringField()
@@ -411,6 +406,11 @@ class GraphColumnReference(micromodels.Model):
 class GraphValueReference(micromodels.Model):
     date = micromodels.DateTimeField(use_int=True)
     measurements = micromodels.FieldCollectionField(micromodels.IntegerField())
+
+
+class Graph(micromodels.Model):
+    columns = micromodels.FieldCollectionField(GraphColumnReference)
+    values = micromodels.FieldCollectionField(GraphValueReference)
 
 
 class Result(micromodels.Model):
