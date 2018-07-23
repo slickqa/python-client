@@ -398,6 +398,21 @@ class ResultReference(micromodels.Model):
     build = micromodels.ModelField(BuildReference)
 
 
+class Graph(micromodels.Model):
+    columns = micromodels.FieldCollectionField(GraphColumnReference)
+    values = micromodels.FieldCollectionField(GraphValueReference)
+
+
+class GraphColumnReference(micromodels.Model):
+    type = micromodels.StringField()
+    name = micromodels.StringField()
+
+
+class GraphValueReference(micromodels.Model):
+    date = micromodels.DateTimeField(use_int=True)
+    measurements = micromodels.FieldCollectionField(micromodels.IntegerField())
+
+
 class Result(micromodels.Model):
     id = micromodels.StringField()
     testrun = micromodels.ModelField(TestrunReference)
@@ -422,6 +437,7 @@ class Result(micromodels.Model):
     history = micromodels.ModelCollectionField(ResultReference)
     hostname = micromodels.StringField()
     requirements = micromodels.FieldCollectionField(micromodels.StringField())
+    graph = micromodels.ModelField(Graph)
 
 
 class HostStatus(micromodels.Model):
