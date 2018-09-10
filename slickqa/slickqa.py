@@ -320,6 +320,7 @@ class SlickQA(object):
             if testdata is not None:
                 test = testdata
             test.name = name
+            test.created = int(round(time.time() * 1000))
             test.project = self.project.create_reference()
             test = self.slickcon.testcases(test).create()
             self.logger.info(

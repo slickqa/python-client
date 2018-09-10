@@ -215,6 +215,7 @@ class TestcaseReference(micromodels.Model):
 
 class Testcase(micromodels.Model):
     id = micromodels.StringField()
+    created = micromodels.DateTimeField(use_int=True)
     name = micromodels.StringField()
     purpose = micromodels.StringField()
     requirements = micromodels.StringField()
