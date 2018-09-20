@@ -272,7 +272,7 @@ class SlickProjectApiPart(SlickApiPart):
 
     def findByName(self, name):
         """Find a project by it's name"""
-        self.data = "byname/" + quote(name)
+        self.data = "byname/" + quote(name) + '?quick=true'
         return self.get()
 
 
