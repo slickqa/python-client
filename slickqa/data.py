@@ -321,8 +321,9 @@ class Testrun(micromodels.Model):
     info = micromodels.StringField()
     state = micromodels.StringField()
     attributes = micromodels.BaseField()
+    requirements = micromodels.FieldCollectionField(micromodels.StringField())
 
-    def create_reference(self):
+def create_reference(self):
         ref = TestrunReference()
         ref.testrunId = self.id
         ref.name = self.name
