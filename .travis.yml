@@ -1,15 +1,15 @@
 sudo: false
 language: python
 python:
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-install: "pip install -r requirements.txt"
+- '2.7'
+- '3.3'
+- '3.4'
+- '3.5'
+install: pip install -r requirements.txt
 script: nosetests slickqa/tests/*
 deploy:
   provider: pypi
   user: stevejensen22
   password:
-    secure: vDTIpbtMUvKSSc58+/g0QEyYkLaw9/+ZD3qh8NgDIwtFrVAmqDeo6AI9uMSh3wvvyUfuLIe0T6rvrJEJ/G62QgM2Hy7CIncTCdef+BDdWO9+q7BHaPkZGjxAT+m5/a7zYU1azRYvlX1iOQCTwiSxFbmIZ/S1cBr01soUTY0RgxAJDRlEiEYrvcjaSxme5TDwmuYDgCrNZ33z7IwO31PMp/h/zLYmvPZtGXZdceKMJ6oxLiuYkUn/qjpOtm2mYXg8GNfzD2y2RVR5qqOP29mTSKrIYCtKj/TV3vOrcoP57c4PSVUFoIYiRYnIrgk71+hy4VE4zgUFefDHKn350yXJZpSsn5B7rIuIgvIZG4ec4jcI1pgbqy23+QdvshVqfaH2OQmeiyyElGnIWk3mPCId8O3vuIJ8b8Y4QNWMH9JYv3QckE7vX+3IDv/9Cpnn/y4PzqnNU81CJGKkyjZ3kz4QlsfWrQTVe+oAFDhAmDXNo3q/nAXYo7YL0FfoP3v+5kd6Y/W0mQZVBILVI/DKKmy0VKwEXWZhYr9hxP4YIkvm4dg+XiBCQaviM2Vb6LvwvS+Pawy8LSdcUrOyOEN7Jdz3u7z8ysoj5l3jHgj5tvYWcN3b4J351lSaIdiXz0eFyxZmkWIgloaRrxQa2sm27sQRL//Zp7BXlwKvr+uHpESsFO0=
+    secure: vibMSmKD0Ulw6Yrevu2RfND4llsTVWpvLlLvtudUkBHlwV7yGjaz0wNSzB++YSSjtCXkDxTgA8RY+M5keXF+TVkSY4MzpCr+zSlnH/If9aDSKbQNv2dWSYQEG8gouifDUVb4RwWaUPVKn2eP8fibRt+WTs6U8kl83dsgAXegg0jATGFgEIR5ezoEt5X6uqwZ4ZjuJvT14Iet3qkFlx/BduTfZUPZp/U2ArR55dXUmdEbSQPTrhbehcKTbmUs4zzCSCydT8Wr2KPyZNp4DPz8hqm0rmPCqbHKdMwRycJyDUaG/7ZeqecRD2BVOF0/s0rITDc0Ab/D3V/jaYgM7c+szLBIYedYyLGRfppMplFF9hud4I5yV98cEKcZDgaujVQ+h3J/0gMUBUNqNICjsk5o5BnPSXJ4rZr0F4LCVv4Dta8trngjGSpzVhMB8IUOUU5fxYQIxbM1W6OxKHQ2Bunwcjl1PWG0N+bvVSiKbuzvUoCFhj/08+92Zn5KQ57pVh7DKTApw0Qe/hdUJ6os8FAwCgc+ls9SO+epNV9mkmpCMThB8DLGLF3LtfguHqBKMf8PsbkTlJDdfSK1cVNv531QimOfhdOU4hNuOpQLZW8rExJjwW4DZheHyQHSC0HD4Bph2sdwvYNzZHtOpBGhGyr3o2IEnAKR4TVu6tpl0sDl6lk=
   skip_existing: true
