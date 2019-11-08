@@ -312,7 +312,7 @@ class SlickQA(object):
                 test = self.slickcon.testcases.findOne(projectid=self.project.id, automationId=testdata.automationId)
             if test is None and hasattr(testdata, 'automationKey') and testdata.automationKey is not None:
                 test = self.slickcon.testcases.findOne(projectid=self.project.id, automationKey=testdata.automationId)
-        if test is None:
+        elif name:
             test = self.slickcon.testcases.findOne(projectid=self.project.id, name=name)
         if test is None:
             self.logger.debug("Creating testcase with name '{}' on project '{}'.".format(name, self.project.name))
