@@ -12,7 +12,7 @@ def get_requirements(filename):
 setup(
     name="slickqa",
     description="A client library for the Slick QA result database",
-    version="2.0.688",
+    version="2.0.689",
     license="License :: OSI Approved :: Apache Software License",
     long_description=open('README.rst').read(),
     packages=find_packages(),
